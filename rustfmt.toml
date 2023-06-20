@@ -1,0 +1,10 @@
+edition = "2021"
+binop_separator = "Back"
+chain_width = 40
+comment_width = 60
+fn_single_line = true
+imports_layout = "HorizontalVertical"
+match_block_trailing_comma = true
+imports_granularity = "One"
+overflow_delimited_expr = true
+tab_spaces = 2

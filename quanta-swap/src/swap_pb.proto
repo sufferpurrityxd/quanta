@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package swap_pb;
+
+// Requests which sends over network
+message ProtoRequest {
+  enum ProtoMessageType {
+    Query = 0;
+    QueryWant = 2;
+  }
+  // Check if new/existing peer have item
+  message ProtoQuery {
+      // Unique id
+      bytes searchId = 1;
+      // Key in [`crate::storage::Storage`]
+      bytes searching = 2;
+  }
+  // Get item from peer
+  message ProtoQueryWant {
+      // Unique ID
+      bytes searchId = 1;
+      // Key in [`crate::storage::Storage`]
+      bytes searching = 2;
+  }
+  bytes message = 1;
+  ProtoMessageType pb_type = 2;
+}
+
+// Responses which sends over network
+message ProtoResponse {
+  enum ProtoMessageType {
+    QueryResponse = 0;
+    QueryWantResponse = 1;
+  }
+  /// Response
+  message ProtoQueryResponse {
+    /// Unique id
+    bytes searchId = 1;
+    /// Check [`crate::Storage::exists`]
+    /// and send it
+    bool exists = 2;
+  }
+  /// Response
+  message ProtoQueryWantResponse {
+    /// Unique ID
+    bytes searchId = 1;
+    /// Item that peer searching
+    bytes item = 2;
+  }
+  bytes message = 1;
+  ProtoMessageType pb_type = 2;
+}

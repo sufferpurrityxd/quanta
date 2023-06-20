@@ -1,0 +1,25 @@
+[package]
+name = "quanta-swap"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-std = { workspace = true }
+async-trait = { workspace = true }
+blake3 = { workspace = true }
+fnv = { workspace = true }
+futures = { workspace = true }
+hex = { workspace = true }
+libp2p = { workspace = true }
+log = { workspace = true }
+prost = { workspace = true }
+quanta-crypto = { workspace = true }
+rand = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+
+[build-dependencies]
+prost-build = { workspace = true }
+
+[dev-dependencies]
+pretty_env_logger = { workspace = true }
