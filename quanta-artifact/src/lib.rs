@@ -1,3 +1,8 @@
+#![allow(dead_code)]
+mod id;
+#[cfg(test)]
+mod test;
+
 /// All files that have been added to access the
 /// network are called artifacts.
 ///
