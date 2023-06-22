@@ -12,5 +12,5 @@ mod test;
 pub use behaviour::{Behaviour, Event, Storage};
 
 mod swap_pb {
-  include!(concat!(env!("OUT_DIR"), "/swap_pb.rs"));
+    include!(concat!(env!("OUT_DIR"), "/swap_pb.rs"));
 }

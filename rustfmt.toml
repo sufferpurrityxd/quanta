@@ -7,4 +7,4 @@ imports_layout = "HorizontalVertical"
 match_block_trailing_comma = true
 imports_granularity = "One"
 overflow_delimited_expr = true
-tab_spaces = 2
+

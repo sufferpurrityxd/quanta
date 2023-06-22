@@ -6,5 +6,5 @@ const PROTOCOL_NAME: &[u8] = b"/quanta/swap/0.0.1";
 pub struct QuantaSwapProtocol;
 
 impl ProtocolName for QuantaSwapProtocol {
-  fn protocol_name(&self) -> &[u8] { PROTOCOL_NAME }
+    fn protocol_name(&self) -> &[u8] { PROTOCOL_NAME }
 }
