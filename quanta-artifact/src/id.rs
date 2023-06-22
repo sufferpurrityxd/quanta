@@ -1,5 +1,6 @@
 use {
     quanta_crypto::{AdvancedHasher, HashValue},
+    serde::{Deserialize, Serialize},
     sha2::Digest,
     std::fmt::{Display, Formatter},
 };
@@ -21,7 +22,7 @@ pub enum ArtifactIdError {
 /// Unique identifier in network.
 /// Used to validate accepeted data
 /// from network or for search.
-#[derive(Debug, Clone, Copy, PartialOrd, Ord, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialOrd, Ord, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ArtifactId {
     /// [`ArtifactId`] its just a
     /// sha2-256 hash of input bytes

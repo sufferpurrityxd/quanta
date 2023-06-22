@@ -9,6 +9,7 @@ blake3 = { workspace = true }
 digest = { workspace = true }
 hex = { workspace = true }
 thiserror = { workspace = true }
+serde = { workspace = true }
 
 [dev-dependencies]
 sha3 = { workspace = true }

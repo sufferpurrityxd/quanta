@@ -45,7 +45,7 @@ impl SearchID {
 
 impl Display for SearchID {
     /// To convert hash-bytes to a string type, use the hex library
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result { write!(f, "{}", self.0.to_string()) }
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result { write!(f, "{}", self.0) }
 }
 
 impl Protobuffable for SearchID {

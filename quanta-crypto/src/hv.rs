@@ -1,6 +1,7 @@
 use {
     crate::Hash,
     hex::FromHex,
+    serde::{Deserialize, Serialize},
     std::fmt::{Display, Formatter, LowerHex},
 };
 
@@ -18,7 +19,7 @@ pub enum HashValueError {
 
 /// [`HashValue`] its just a hash
 /// but with some implementations
-#[derive(Debug, Clone, Copy, PartialOrd, Ord, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialOrd, Ord, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct HashValue(Hash);
 
 impl HashValue {

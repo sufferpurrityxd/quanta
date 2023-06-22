@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 mod artifact;
 mod id;
+mod magnet;
 mod reader;
 #[cfg(test)]
 mod test;
