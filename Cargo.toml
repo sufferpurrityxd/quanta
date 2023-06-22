@@ -2,6 +2,7 @@
 members = [
     "quanta-artifact",
     "quanta-crypto",
+    "quanta-walker",
     "quanta-swap",
 ]
 
