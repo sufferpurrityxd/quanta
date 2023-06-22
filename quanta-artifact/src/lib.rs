@@ -1,5 +1,7 @@
 #![allow(dead_code)]
+mod artifact;
 mod id;
+mod reader;
 #[cfg(test)]
 mod test;
 
@@ -13,4 +15,4 @@ mod test;
 ///
 /// Cons - the file may disappear due to the user's inattention
 /// Pros - we do not create a new instance and do not clog memory once again
-type _TODO = usize;
+pub(crate) const MAX_ARTIFACT_SIZE: usize = 2048;

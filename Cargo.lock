@@ -2103,7 +2103,9 @@ dependencies = [
 name = "quanta-artifact"
 version = "0.1.0"
 dependencies = [
+ "async-std",
  "bs58 0.5.0",
+ "futures",
  "quanta-crypto",
  "sha2 0.10.7",
  "thiserror",
