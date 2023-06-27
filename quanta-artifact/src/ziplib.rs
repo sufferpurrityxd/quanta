@@ -50,8 +50,8 @@ pub fn encode_gzip_all(input: Vec<u8>) -> Result<Vec<u8>, ZipLibError> {
         .write_all(input.as_slice())
         .map_err(|_| ZipLibError::IO)?;
     // finalize
-    Ok(encoder
+    encoder
         .finish()
         .into_result()
-        .map_err(|_| ZipLibError::IntoResult)?)
+        .map_err(|_| ZipLibError::IntoResult)
 }

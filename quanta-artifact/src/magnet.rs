@@ -3,6 +3,8 @@ use {
         id::ArtifactId,
         ziplib::{decode_gzip_all, encode_gzip_all},
     },
+    async_std::path::Path,
+    futures::{AsyncReadExt, AsyncWriteExt},
     serde::{Deserialize, Serialize},
     std::{
         collections::HashMap,
@@ -28,6 +30,9 @@ pub enum MagnetError {
     #[error("Zip lib error")]
     /// Error whill occur when working with compression
     ZipLibError(#[from] crate::ziplib::ZipLibError),
+    #[error("IO Error")]
+    /// IO error
+    IOError(#[from] std::io::Error),
 }
 
 /// A magnet link is a link to a file on the quanta network.
@@ -93,6 +98,26 @@ impl MagnetLink {
     /// returns [`Self`] from json-based bytes
     pub fn from_json(json: Vec<u8>) -> Result<Self, MagnetError> {
         serde_json::from_slice(json.as_slice()).map_err(|_| MagnetError::FromJson)
+    }
+    /// save magnet link in file
+    pub async fn save_into_file<P>(&self, path: P) -> Result<(), MagnetError>
+    where
+        P: AsRef<Path>,
+    {
+        let bytes = self.to_json_compressed()?;
+        let mut file = async_std::fs::File::create(path).await?;
+        file.write_all(bytes.as_slice()).await?;
+        Ok(())
+    }
+    /// load magnet link from that we are get in [MagnetLink::save_into_file]
+    pub async fn read_from_file<P>(&self, path: P) -> Result<Self, MagnetError>
+    where
+        P: AsRef<Path>,
+    {
+        let mut file = async_std::fs::File::open(path).await?;
+        let mut buf = Vec::new();
+        file.read_to_end(&mut buf).await?;
+        Self::from_json_compressed(buf)
     }
 }
 
