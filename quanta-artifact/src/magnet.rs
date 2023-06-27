@@ -1,5 +1,8 @@
 use {
-    crate::id::ArtifactId,
+    crate::{
+        id::ArtifactId,
+        ziplib::{decode_gzip_all, encode_gzip_all},
+    },
     serde::{Deserialize, Serialize},
     std::{
         collections::HashMap,
@@ -22,6 +25,9 @@ pub enum MagnetError {
     /// Error whill occur when trying to
     /// convert string magnet link into bytes
     Base58Decode(#[from] bs58::decode::Error),
+    #[error("Zip lib error")]
+    /// Error whill occur when working with compression
+    ZipLibError(#[from] crate::ziplib::ZipLibError),
 }
 
 /// A magnet link is a link to a file on the quanta network.
@@ -76,6 +82,14 @@ impl MagnetLink {
     pub fn to_json(&self) -> Result<Vec<u8>, MagnetError> {
         serde_json::to_vec(self).map_err(|_| MagnetError::ToJson)
     }
+    /// get json bytes and compress them with gzip
+    pub fn to_json_compressed(&self) -> Result<Vec<u8>, MagnetError> {
+        Ok(encode_gzip_all(self.to_json()?)?)
+    }
+    /// get self from json-compressed bytes
+    pub fn from_json_compressed(input: Vec<u8>) -> Result<Self, MagnetError> {
+        Self::from_json(decode_gzip_all(input.as_slice())?)
+    }
     /// returns [`Self`] from json-based bytes
     pub fn from_json(json: Vec<u8>) -> Result<Self, MagnetError> {
         serde_json::from_slice(json.as_slice()).map_err(|_| MagnetError::FromJson)
@@ -87,7 +101,7 @@ impl Display for MagnetLink {
     /// link for sharing over network
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let json = self
-            .to_json()
+            .to_json_compressed()
             .map_err(|_| std::fmt::Error)?;
         write!(f, "{}", bs58::encode(json).into_string())
     }
@@ -98,6 +112,6 @@ impl TryFrom<String> for MagnetLink {
     /// Get [`MagnetLink`] from string-based
     /// link that we are receive in [`Display`]
     fn try_from(value: String) -> Result<Self, Self::Error> {
-        Self::from_json(bs58::decode(value).into_vec()?)
+        Self::from_json_compressed(bs58::decode(value).into_vec()?)
     }
 }

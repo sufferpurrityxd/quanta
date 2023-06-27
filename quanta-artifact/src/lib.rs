@@ -5,6 +5,7 @@ mod magnet;
 mod reader;
 #[cfg(test)]
 mod test;
+mod ziplib;
 
 /// All files that have been added to access the
 /// network are called artifacts.
