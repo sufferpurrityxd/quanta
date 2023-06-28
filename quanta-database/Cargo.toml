@@ -1,0 +1,10 @@
+[package]
+name = "quanta-database"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sled = { workspace = true }
+quanta-artifact = { workspace = true }
+quanta-swap = { workspace = true }
+thiserror = { workspace = true }
