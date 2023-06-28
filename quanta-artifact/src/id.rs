@@ -58,6 +58,14 @@ impl ArtifactId {
             )?,
         })
     }
+    /// Convert artifact id to bytes
+    pub fn to_bytes(self) -> Vec<u8> { self.hv.to_bytes() }
+    /// Get artifact id from bytes
+    pub fn from_bytes(input: &[u8]) -> Result<Self, ArtifactIdError> {
+        Ok(Self {
+            hv: HashValue::try_from(input)?,
+        })
+    }
 }
 
 impl Display for ArtifactId {

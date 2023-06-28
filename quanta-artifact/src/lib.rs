@@ -13,3 +13,5 @@ mod ziplib;
 /// An artifact is a file that is
 /// distributed directly from the user's computer.
 pub(crate) const MAX_ARTIFACT_SIZE: usize = 2048;
+
+pub use crate::id::ArtifactId;
