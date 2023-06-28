@@ -2206,6 +2206,7 @@ dependencies = [
 name = "quanta-database"
 version = "0.1.0"
 dependencies = [
+ "log",
  "quanta-artifact",
  "quanta-swap",
  "sled",

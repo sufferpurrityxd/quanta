@@ -8,3 +8,4 @@ sled = { workspace = true }
 quanta-artifact = { workspace = true }
 quanta-swap = { workspace = true }
 thiserror = { workspace = true }
+log = { workspace = true }
