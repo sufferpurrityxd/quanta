@@ -9,9 +9,9 @@ use crate::id::ArtifactId;
 #[derive(Debug, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Artifact {
     /// Unqiue id of [`Artifact::data`]
-    id: ArtifactId,
+    pub id: ArtifactId,
     /// Bytes data
-    data: Vec<u8>,
+    pub data: Vec<u8>,
 }
 
 impl Artifact {

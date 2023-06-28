@@ -1,6 +1,6 @@
 use {
     log::{error, warn},
-    quanta_artifact::ArtifactId,
+    quanta_artifact::{Artifact, ArtifactId},
     sled::Db,
     std::path::Path,
 };
@@ -28,6 +28,19 @@ impl Repository {
     {
         let storage = sled::open(path)?;
         Ok(Self { storage })
+    }
+    /// Insert artifact into database
+    pub fn insert_artifact(&self, artifact: Artifact) -> Result<(), Error> {
+        self.storage
+            .insert(artifact.id.to_bytes(), artifact.data)?;
+        Ok(())
+    }
+    /// Get artifact from database
+    pub fn get_artifact(&self, id: ArtifactId) -> Result<Option<Artifact>, Error> {
+        Ok(self
+            .storage
+            .get(id.to_bytes())?
+            .map(|ivec| Artifact::new(ivec.to_vec())))
     }
 }
 
