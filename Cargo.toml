@@ -4,6 +4,8 @@ members = [
     "quanta-crypto",
     "quanta-database",
     "quanta-swap",
+    "quanta-network",
+    "quanta-proxy",
 ]
 
 [workspace.dependencies]
