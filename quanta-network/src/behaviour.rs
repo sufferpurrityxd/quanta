@@ -40,11 +40,11 @@ impl From<identify::Event> for Event {
 #[behaviour(to_swarm = "Event")]
 pub struct Behaviour {
     /// Search artifacts in network
-    quanta_swap: quanta_swap::Behaviour<Repository>,
+    pub(crate) quanta_swap: quanta_swap::Behaviour<Repository>,
     /// Search peers in network
-    kademlia: kad::Kademlia<kad::store::MemoryStore>,
-    ping: ping::Behaviour,
-    identify: identify::Behaviour,
+    pub(crate) kademlia: kad::Kademlia<kad::store::MemoryStore>,
+    pub(crate) ping: ping::Behaviour,
+    pub(crate) identify: identify::Behaviour,
 }
 
 impl Behaviour {
