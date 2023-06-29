@@ -7,6 +7,7 @@ edition = "2021"
 [dependencies]
 quanta-swap = { workspace = true }
 quanta-database = { workspace = true }
+quanta-artifact = { workspace = true }
 libp2p = { workspace = true }
 thiserror = { workspace = true }
 futures = { workspace = true }
