@@ -2425,6 +2425,7 @@ dependencies = [
  "async-std",
  "futures",
  "libp2p",
+ "log",
  "quanta-artifact",
  "quanta-database",
  "quanta-swap",

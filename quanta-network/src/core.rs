@@ -1,21 +1,53 @@
 use {
     crate::{
-        behaviour::{create_behaviour, Behaviour},
-        proxy::{FromProxy, ToProxy},
+        behaviour::{create_behaviour, Behaviour, BehaviourEvent},
         swarm::create_swarm,
         transport::create_transport,
     },
     futures::StreamExt,
-    libp2p::{identity::Keypair, swarm::Swarm, PeerId},
+    libp2p::{identity::Keypair, swarm::Swarm, Multiaddr, PeerId},
+    log::error,
+    quanta_artifact::{Artifact, ArtifactId},
     quanta_database::Repository,
     std::{sync::Arc, time::Duration},
     tokio::{
         select,
-        sync::mpsc::{channel, Receiver, Sender},
+        sync::{mpsc, oneshot},
         time::sleep,
     },
 };
-use crate::behaviour::BehaviourEvent;
+
+/// Enum that we are accept
+/// from proxy and do something with
+pub enum FromProxy {
+    /// When we receive this event that
+    /// means we should start new quanta search
+    QuantaSwapSearch {
+        /// Id that we are looking for
+        artifact_id: ArtifactId,
+    },
+    /// Send connected peers into proxy
+    GetConnectedPeers {
+        /// Over this channel peers
+        /// sends from core to proxy
+        ch: oneshot::Sender<Vec<PeerId>>,
+    },
+    /// Send info about listeners into proxy
+    GetListeners {
+        /// Over this channel multiaddrs
+        /// sends from core to proxy
+        ch: oneshot::Sender<Vec<Multiaddr>>,
+    },
+}
+
+/// This enum we send into proxy
+pub enum ToProxy {
+    /// When search is complete than we send this
+    QuantaSwapSearchCompleted {
+        /// Artifact
+        artifact: Artifact,
+    },
+}
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {}
@@ -29,9 +61,9 @@ pub struct QuantaCore {
     /// Repository
     repository: Arc<Repository>,
     /// Receive events from proxy
-    proxy_receiver_rx: Receiver<FromProxy>,
+    proxy_receiver_rx: mpsc::Receiver<FromProxy>,
     /// Send events into proxy
-    proxy_sender_tx: Sender<ToProxy>,
+    proxy_sender_tx: mpsc::Sender<ToProxy>,
     /// Delay of kademlia walk in secs
     kad_walk_delay_secs: u64,
 }
@@ -42,13 +74,13 @@ impl QuantaCore {
         repository: Arc<Repository>,
         keypair: Keypair,
         local_peer_id: PeerId,
-    ) -> (Self, Receiver<ToProxy>, Sender<FromProxy>) {
+    ) -> (Self, mpsc::Receiver<ToProxy>, mpsc::Sender<FromProxy>) {
         let kad_walk_delay_secs = 60; // minute
         let transport = create_transport(&keypair).expect("failed to create transport");
         let behaviour = create_behaviour(Arc::clone(&repository), local_peer_id, &keypair);
         let swarm = create_swarm(transport, behaviour, local_peer_id);
-        let (proxy_receiver_tx, proxy_receiver_rx) = channel::<FromProxy>(2048);
-        let (proxy_sender_tx, proxy_sender_rx) = channel::<ToProxy>(2048);
+        let (proxy_receiver_tx, proxy_receiver_rx) = mpsc::channel::<FromProxy>(2048);
+        let (proxy_sender_tx, proxy_sender_rx) = mpsc::channel::<ToProxy>(2048);
         (
             Self {
                 swarm,
@@ -65,9 +97,9 @@ impl QuantaCore {
     async fn handle_swarm_event(&mut self, swarm_event: BehaviourEvent) -> Result<(), Error> {
         match swarm_event {
             BehaviourEvent::QuantaSwap(_) => {},
-            BehaviourEvent::Kademlia(_) => {}
-            BehaviourEvent::Ping(_) => {}
-            BehaviourEvent::Identify(_) => {}
+            BehaviourEvent::Kademlia(_) => {},
+            BehaviourEvent::Ping(_) => {},
+            BehaviourEvent::Identify(_) => {},
         };
         Ok(())
     }
@@ -76,8 +108,33 @@ impl QuantaCore {
     /// are accept from [Receiver<ToProxy>]
     async fn handle_proxy_event(&mut self, proxy_event: FromProxy) -> Result<(), Error> {
         match proxy_event {
-            FromProxy::QuantaSwapSearch { .. } => {}
-        }
+            FromProxy::QuantaSwapSearch { artifact_id } => {
+                self.swarm
+                    .behaviour_mut()
+                    .quanta_swap
+                    .search_item_with(artifact_id.to_bytes());
+            },
+            FromProxy::GetConnectedPeers { ch } => {
+                if let Err(_) = ch.send(
+                    self.swarm
+                        .connected_peers()
+                        .map(|peer| *peer)
+                        .collect::<Vec<PeerId>>(),
+                ) {
+                    error!("got unexpected error when sending connected peers to proxy");
+                };
+            },
+            FromProxy::GetListeners { ch } => {
+                if let Err(_) = ch.send(
+                    self.swarm
+                        .listeners()
+                        .map(|multiaddr| multiaddr.clone())
+                        .collect::<Vec<Multiaddr>>(),
+                ) {
+                    error!("got unexpected error when sending connected peers to proxy");
+                };
+            },
+        };
         Ok(())
     }
 
