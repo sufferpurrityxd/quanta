@@ -2455,6 +2455,7 @@ dependencies = [
  "quanta-crypto",
  "rand 0.8.5",
  "thiserror",
+ "tokio",
 ]
 
 [[package]]

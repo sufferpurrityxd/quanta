@@ -27,12 +27,12 @@ use {
 struct MemoryStorage(Arc<Mutex<HashMap<Vec<u8>, Vec<u8>>>>);
 
 impl Storage for MemoryStorage {
-    fn exists(&mut self, key: Vec<u8>) -> bool {
+    fn exists(&self, key: Vec<u8>) -> bool {
         let guard = futures::executor::block_on(self.0.lock());
         guard.contains_key(&key)
     }
 
-    fn get(&mut self, key: Vec<u8>) -> Option<Vec<u8>> {
+    fn get(&self, key: Vec<u8>) -> Option<Vec<u8>> {
         let guard = futures::executor::block_on(self.0.lock());
         guard.get(&key).cloned()
     }
@@ -60,7 +60,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let storage = MemoryStorage::new(Arc::clone(&hm));
     // Create behaviour
     let behaviour = Behaviour {
-        quanta_swap: quanta_swap::Behaviour::new(storage),
+        quanta_swap: quanta_swap::Behaviour::new(Arc::new(storage)),
     };
     // transport
     let tcp_transport = tcp::async_io::Transport::new(tcp::Config::default().nodelay(true))
