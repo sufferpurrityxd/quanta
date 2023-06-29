@@ -6,3 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+quanta-swap = { workspace = true }
+quanta-database = { workspace = true }
+libp2p = { workspace = true }
+thiserror = { workspace = true }

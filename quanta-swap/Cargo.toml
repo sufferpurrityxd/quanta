@@ -16,7 +16,7 @@ prost = { workspace = true }
 quanta-crypto = { workspace = true }
 rand = { workspace = true }
 thiserror = { workspace = true }
-tokio = { workspace = true }
+
 
 [build-dependencies]
 prost-build = { workspace = true }

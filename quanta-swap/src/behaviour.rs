@@ -29,6 +29,7 @@ use {
     log::debug,
     std::{
         collections::{HashMap, VecDeque},
+        sync::Arc,
         task::{Context, Poll},
     },
 };
@@ -39,9 +40,9 @@ use {
 /// but I recommend using something like Rocksdb
 pub trait Storage {
     /// Check if value with key exists
-    fn exists(&mut self, key: Vec<u8>) -> bool;
+    fn exists(&self, key: Vec<u8>) -> bool;
     /// Get value by key
-    fn get(&mut self, key: Vec<u8>) -> Option<Vec<u8>>;
+    fn get(&self, key: Vec<u8>) -> Option<Vec<u8>>;
 }
 
 /// Events that we are send out of this behaviour
@@ -85,7 +86,7 @@ where
     /// Storage is needed to check or receive
     /// data that will be sent
     /// later to other network members
-    storage: S,
+    storage: Arc<S>,
     /// All active connections
     connections: FnvHashSet<PeerId>,
     /// All active queries.
@@ -103,7 +104,7 @@ where
     S: Storage + 'static,
 {
     /// Create new [`Behaviour`]
-    pub fn new(storage: S) -> Self {
+    pub fn new(storage: Arc<S>) -> Self {
         let request_response = RequestResponse::new(
             QuantaSwapCodec,
             std::iter::once((QuantaSwapProtocol, ProtocolSupport::Full)),

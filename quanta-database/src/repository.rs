@@ -46,7 +46,7 @@ impl Repository {
 
 /// Implement quanta-swap storage for repository
 impl quanta_swap::Storage for Repository {
-    fn exists(&mut self, key: Vec<u8>) -> bool {
+    fn exists(&self, key: Vec<u8>) -> bool {
         match self.storage.contains_key(key) {
             Ok(contains) => contains,
             Err(error) => {
@@ -59,7 +59,7 @@ impl quanta_swap::Storage for Repository {
         }
     }
 
-    fn get(&mut self, key: Vec<u8>) -> Option<Vec<u8>> {
+    fn get(&self, key: Vec<u8>) -> Option<Vec<u8>> {
         match self.storage.get(key) {
             Ok(value) => value.map(|ivec| ivec.to_vec()),
             Err(error) => {
