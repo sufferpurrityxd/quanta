@@ -14,4 +14,7 @@ mod ziplib;
 /// distributed directly from the user's computer.
 pub(crate) const MAX_ARTIFACT_SIZE: usize = 2048;
 
-pub use crate::{artifact::Artifact, id::ArtifactId};
+pub use crate::{
+    artifact::Artifact,
+    id::{ArtifactId, ArtifactIdError},
+};

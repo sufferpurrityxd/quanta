@@ -9,7 +9,10 @@ mod searchid;
 #[cfg(test)]
 mod test;
 
-pub use behaviour::{Behaviour, Event, Storage};
+pub use {
+    behaviour::{Behaviour, Event, Storage},
+    searchid::SearchID,
+};
 
 mod swap_pb {
     include!(concat!(env!("OUT_DIR"), "/swap_pb.rs"));

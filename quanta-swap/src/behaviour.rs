@@ -51,6 +51,8 @@ pub trait Storage {
 #[derive(Debug)]
 pub enum Event {
     QueryCompleted {
+        /// Who send this result
+        peer: PeerId,
         /// Unqiue ID
         search_id: SearchID,
         /// Key in bytes of value
@@ -232,6 +234,7 @@ where
             QuantaSwapRespone::QueryWant { search_id, item } => {
                 if let Some(searching) = self.queries.remove(&search_id) {
                     return Some(Event::QueryCompleted {
+                        peer,
                         search_id,
                         searching,
                         item,

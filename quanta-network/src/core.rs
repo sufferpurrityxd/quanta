@@ -9,6 +9,7 @@ use {
     log::error,
     quanta_artifact::{Artifact, ArtifactId},
     quanta_database::Repository,
+    quanta_swap::SearchID,
     std::{sync::Arc, time::Duration},
     tokio::{
         select,
@@ -41,16 +42,27 @@ pub enum FromProxy {
 }
 
 /// This enum we send into proxy
+#[derive(Debug, Clone)]
 pub enum ToProxy {
     /// When search is complete than we send this
     QuantaSwapSearchCompleted {
+        search_id: SearchID,
         /// Artifact
         artifact: Artifact,
     },
 }
 
 #[derive(thiserror::Error, Debug)]
-pub enum Error {}
+pub enum Error {
+    #[error("Artifact id decode error")]
+    /// Error whill occur when
+    /// trying to get artifact id from bytes
+    ArtifactId(#[from] quanta_artifact::ArtifactIdError),
+    #[error("To proxy send error")]
+    /// Error whill occur when trying
+    /// to send [ToProxy] enum over channels
+    Send(#[from] mpsc::error::SendError<ToProxy>),
+}
 
 /// [QuantaCore] - is a main struct of quanta networking
 ///
@@ -93,15 +105,28 @@ impl QuantaCore {
             proxy_receiver_tx,
         )
     }
+    /// handle events from [quanta_swap::Behaviour]
+    async fn handle_quanta_swap(&mut self, event: quanta_swap::Event) -> Result<(), Error> {
+        let quanta_swap::Event::QueryCompleted {
+            search_id, item, ..
+        } = event;
+        self.proxy_sender_tx
+            .send(ToProxy::QuantaSwapSearchCompleted {
+                search_id,
+                artifact: Artifact::new(item),
+            })
+            .await?;
+        Ok(())
+    }
+
     /// Handle events that we are accept from swarm
     async fn handle_swarm_event(&mut self, swarm_event: BehaviourEvent) -> Result<(), Error> {
         match swarm_event {
-            BehaviourEvent::QuantaSwap(_) => {},
-            BehaviourEvent::Kademlia(_) => {},
-            BehaviourEvent::Ping(_) => {},
-            BehaviourEvent::Identify(_) => {},
-        };
-        Ok(())
+            BehaviourEvent::QuantaSwap(event) => self.handle_quanta_swap(event).await,
+            BehaviourEvent::Kademlia(_) => Ok(()),
+            BehaviourEvent::Ping(_) => Ok(()),
+            BehaviourEvent::Identify(_) => Ok(()),
+        }
     }
 
     /// Handle proxy events that we
