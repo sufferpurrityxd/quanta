@@ -2381,6 +2381,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "quanta"
+version = "0.1.0"
+
+[[package]]
 name = "quanta-artifact"
 version = "0.1.0"
 dependencies = [

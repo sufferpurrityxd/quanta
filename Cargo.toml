@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "quanta",
     "quanta-artifact",
     "quanta-crypto",
     "quanta-database",
@@ -33,6 +34,9 @@ thiserror = "1.0.40"
 [workspace.dependencies.tokio]
 version = "1.28.2"
 features = ["full"]
+
+[workspace.dependencies.quanta]
+path = "quanta"
 
 [workspace.dependencies.quanta-artifact]
 path = "quanta-artifact"
