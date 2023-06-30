@@ -1,16 +1,17 @@
 use {
     crate::{
         behaviour::{create_behaviour, Behaviour, BehaviourEvent},
+        statistics::PeerStatistic,
         swarm::create_swarm,
         transport::create_transport,
     },
     futures::StreamExt,
-    libp2p::{identity::Keypair, swarm::Swarm, Multiaddr, PeerId},
-    log::error,
+    libp2p::{identity::Keypair, kad, ping, swarm::Swarm, Multiaddr, PeerId},
+    log::{error, trace},
     quanta_artifact::{Artifact, ArtifactId},
     quanta_database::Repository,
     quanta_swap::SearchID,
-    std::{sync::Arc, time::Duration},
+    std::{collections::HashMap, sync::Arc, time::Duration},
     tokio::{
         select,
         sync::{mpsc, oneshot},
@@ -31,7 +32,7 @@ pub enum FromProxy {
     GetConnectedPeers {
         /// Over this channel peers
         /// sends from core to proxy
-        ch: oneshot::Sender<Vec<PeerId>>,
+        ch: oneshot::Sender<HashMap<PeerId, PeerStatistic>>,
     },
     /// Send info about listeners into proxy
     GetListeners {
@@ -78,6 +79,8 @@ pub struct QuantaCore {
     proxy_sender_tx: mpsc::Sender<ToProxy>,
     /// Delay of kademlia walk in secs
     kad_walk_delay_secs: u64,
+    /// Statistics
+    peers_stat: HashMap<PeerId, PeerStatistic>,
 }
 
 impl QuantaCore {
@@ -89,10 +92,11 @@ impl QuantaCore {
     ) -> (Self, mpsc::Receiver<ToProxy>, mpsc::Sender<FromProxy>) {
         let kad_walk_delay_secs = 60; // minute
         let transport = create_transport(&keypair).expect("failed to create transport");
-        let behaviour = create_behaviour(Arc::clone(&repository), local_peer_id, &keypair);
+        let behaviour = create_behaviour(Arc::clone(&repository), local_peer_id);
         let swarm = create_swarm(transport, behaviour, local_peer_id);
         let (proxy_receiver_tx, proxy_receiver_rx) = mpsc::channel::<FromProxy>(2048);
         let (proxy_sender_tx, proxy_sender_rx) = mpsc::channel::<ToProxy>(2048);
+        let peers_stat = HashMap::new();
         (
             Self {
                 swarm,
@@ -100,6 +104,7 @@ impl QuantaCore {
                 proxy_receiver_rx,
                 proxy_sender_tx,
                 kad_walk_delay_secs,
+                peers_stat,
             },
             proxy_sender_rx,
             proxy_receiver_tx,
@@ -108,7 +113,10 @@ impl QuantaCore {
     /// handle events from [quanta_swap::Behaviour]
     async fn handle_quanta_swap(&mut self, event: quanta_swap::Event) -> Result<(), Error> {
         let quanta_swap::Event::QueryCompleted {
-            search_id, item, ..
+            peer,
+            search_id,
+            item,
+            ..
         } = event;
         self.proxy_sender_tx
             .send(ToProxy::QuantaSwapSearchCompleted {
@@ -116,16 +124,50 @@ impl QuantaCore {
                 artifact: Artifact::new(item),
             })
             .await?;
+        // update statistics
+        self.peers_stat
+            .entry(peer)
+            .or_insert(PeerStatistic::default())
+            .increment_artifacts_received();
         Ok(())
     }
-
+    /// handle events from [kad::KademliaEvent]
+    async fn handle_kad(&mut self, event: kad::KademliaEvent) -> Result<(), Error> {
+        match event {
+            kad::KademliaEvent::InboundRequest { .. } => {},
+            kad::KademliaEvent::OutboundQueryProgressed { .. } => {},
+            kad::KademliaEvent::RoutingUpdated { .. } => {},
+            kad::KademliaEvent::UnroutablePeer { .. } => {},
+            kad::KademliaEvent::RoutablePeer { .. } => {},
+            kad::KademliaEvent::PendingRoutablePeer { .. } => {},
+        };
+        Ok(())
+    }
+    /// handle events from [ping::Event]
+    async fn handle_ping(&mut self, event: ping::Event) -> Result<(), Error> {
+        match event.result {
+            Ok(ping::Success::Ping { rtt }) => self
+                .peers_stat
+                .entry(event.peer)
+                .or_insert(PeerStatistic::default())
+                .update_rtt(rtt),
+            Ok(ping::Success::Pong) => trace!("pong from peer: {}", event.peer),
+            Err(ping::Failure::Timeout) => trace!("timeout failure from peer: {}", event.peer),
+            Err(ping::Failure::Other { error }) => {
+                trace!("unknown error: {} from peer: {}", error, event.peer)
+            },
+            Err(ping::Failure::Unsupported) => {
+                trace!("unsupported ping protocol from peer: {}", event.peer)
+            },
+        };
+        Ok(())
+    }
     /// Handle events that we are accept from swarm
     async fn handle_swarm_event(&mut self, swarm_event: BehaviourEvent) -> Result<(), Error> {
         match swarm_event {
             BehaviourEvent::QuantaSwap(event) => self.handle_quanta_swap(event).await,
-            BehaviourEvent::Kademlia(_) => Ok(()),
-            BehaviourEvent::Ping(_) => Ok(()),
-            BehaviourEvent::Identify(_) => Ok(()),
+            BehaviourEvent::Kademlia(event) => self.handle_kad(event).await,
+            BehaviourEvent::Ping(event) => self.handle_ping(event).await,
         }
     }
 
@@ -140,12 +182,7 @@ impl QuantaCore {
                     .search_item_with(artifact_id.to_bytes());
             },
             FromProxy::GetConnectedPeers { ch } => {
-                if let Err(_) = ch.send(
-                    self.swarm
-                        .connected_peers()
-                        .map(|peer| *peer)
-                        .collect::<Vec<PeerId>>(),
-                ) {
+                if let Err(_) = ch.send(self.peers_stat.clone()) {
                     error!("got unexpected error when sending connected peers to proxy");
                 };
             },

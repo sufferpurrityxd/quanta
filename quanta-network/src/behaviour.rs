@@ -1,5 +1,5 @@
 use {
-    libp2p::{identify, identity::Keypair, kad, ping, swarm::NetworkBehaviour, PeerId},
+    libp2p::{kad, ping, swarm::NetworkBehaviour, PeerId},
     quanta_database::Repository,
     std::sync::Arc,
 };
@@ -15,8 +15,6 @@ pub enum Event {
     Kademlia(kad::KademliaEvent),
     /// Events from ping
     Ping(ping::Event),
-    /// Events from identify
-    Identify(identify::Event),
 }
 
 impl From<kad::KademliaEvent> for Event {
@@ -31,10 +29,6 @@ impl From<ping::Event> for Event {
     fn from(value: ping::Event) -> Self { Event::Ping(value) }
 }
 
-impl From<identify::Event> for Event {
-    fn from(value: identify::Event) -> Self { Event::Identify(value) }
-}
-
 /// Main behaviour of quanta protocol
 #[derive(NetworkBehaviour)]
 #[behaviour(to_swarm = "Event")]
@@ -44,12 +38,11 @@ pub struct Behaviour {
     /// Search peers in network
     pub(crate) kademlia: kad::Kademlia<kad::store::MemoryStore>,
     pub(crate) ping: ping::Behaviour,
-    pub(crate) identify: identify::Behaviour,
 }
 
 impl Behaviour {
     /// Create new behaviour
-    pub fn new(repository: Arc<Repository>, local_peer_id: PeerId, keypair: &Keypair) -> Self {
+    pub fn new(repository: Arc<Repository>, local_peer_id: PeerId) -> Self {
         Self {
             quanta_swap: quanta_swap::Behaviour::new(repository),
             kademlia: kad::Kademlia::new(
@@ -57,18 +50,10 @@ impl Behaviour {
                 kad::store::MemoryStore::new(local_peer_id),
             ),
             ping: ping::Behaviour::new(ping::Config::default()),
-            identify: identify::Behaviour::new(identify::Config::new(
-                String::from(IDENTIFY_PROTOCOL),
-                keypair.public(),
-            )),
         }
     }
 }
 
-pub fn create_behaviour(
-    repository: Arc<Repository>,
-    local_peer_id: PeerId,
-    keypair: &Keypair,
-) -> Behaviour {
-    Behaviour::new(repository, local_peer_id, keypair)
+pub fn create_behaviour(repository: Arc<Repository>, local_peer_id: PeerId) -> Behaviour {
+    Behaviour::new(repository, local_peer_id)
 }
