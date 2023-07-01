@@ -1,12 +1,8 @@
 [workspace]
 members = [
-    "quanta",
     "quanta-artifact",
-    "quanta-crypto",
-    "quanta-database",
     "quanta-swap",
-    "quanta-network",
-    "quanta-proxy",
+    "quanta-crypto",
 ]
 
 [workspace.dependencies]
@@ -35,9 +31,6 @@ thiserror = "1.0.40"
 version = "1.28.2"
 features = ["full"]
 
-[workspace.dependencies.quanta]
-path = "quanta"
-
 [workspace.dependencies.quanta-artifact]
 path = "quanta-artifact"
 
@@ -47,11 +40,6 @@ path = "quanta-crypto"
 [workspace.dependencies.quanta-swap]
 path = "quanta-swap"
 
-[workspace.dependencies.quanta-database]
-path = "quanta-database"
-
-[workspace.dependencies.quanta-proxy]
-path = "quanta-proxy"
 
 [workspace.dependencies.base64ct]
 version = "1.6.0"
