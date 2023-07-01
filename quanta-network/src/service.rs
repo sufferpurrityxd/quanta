@@ -20,6 +20,10 @@ use {
     std::{collections::HashMap, sync::Arc},
     tokio::sync,
 };
+use crate::error::Error;
+
+/// Delay of walk runner: [kad::Kademlia::get_closest_peers]
+const KADEMLIA_DELAY_WALK: u64 = 60;
 
 /// Main module of quanta netowrk is [QuantaService].
 ///
@@ -86,5 +90,9 @@ impl QuantaService {
             service_sender,
             proxy_receiver,
         )
+    }
+    /// Run [QuantaService]. Here we waiting service_receiver or swarm events and handle it
+    pub fn start_handle_service(self) -> Result<(), Error> {
+        Ok(())
     }
 }

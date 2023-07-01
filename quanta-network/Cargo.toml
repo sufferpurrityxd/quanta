@@ -8,3 +8,5 @@ libp2p = { workspace = true }
 quanta-swap = { workspace = true }
 quanta-store = { workspace = true }
 tokio = { workspace = true }
+quanta-artifact = { workspace = true }
+thiserror = { workspace = true }
