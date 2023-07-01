@@ -2,5 +2,6 @@
 #![allow(deprecated)]
 
 mod behaviour;
+mod info;
 mod proxy;
 mod service;

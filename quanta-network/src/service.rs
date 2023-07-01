@@ -1,6 +1,7 @@
 use {
     crate::{
         behaviour::QuantaNetworkBehaviour,
+        info::ConnectionInformation,
         proxy::{ToProxyEvent, ToServiceEvent},
     },
     libp2p::{
@@ -16,7 +17,7 @@ use {
         Transport,
     },
     quanta_store::QuantaStore,
-    std::sync::Arc,
+    std::{collections::HashMap, sync::Arc},
     tokio::sync,
 };
 
@@ -35,6 +36,8 @@ pub struct QuantaService {
     proxy_sender: sync::mpsc::Sender<ToProxyEvent>,
     /// Receive channel that receive events from proxy
     service_receiver: sync::mpsc::Receiver<ToServiceEvent>,
+    /// Map connection with peer and statistics
+    connections: HashMap<PeerId, ConnectionInformation>,
 }
 
 impl QuantaService {
@@ -50,7 +53,8 @@ impl QuantaService {
         sync::mpsc::Receiver<ToProxyEvent>,
     ) {
         let swarm = {
-            let behaviour = QuantaNetworkBehaviour::new(storage, local_peer_id);
+            let local_public_key = keypair.public();
+            let behaviour = QuantaNetworkBehaviour::new(storage, local_peer_id, local_public_key);
             let transport =
                 OrTransport::new(
                     tcp::async_io::Transport::new(tcp::Config::default())
@@ -71,11 +75,13 @@ impl QuantaService {
         };
         let (proxy_sender, proxy_receiver) = sync::mpsc::channel(2048);
         let (service_sender, service_receiver) = sync::mpsc::channel(2048);
+        let connections = HashMap::new();
         (
             Self {
                 swarm,
                 proxy_sender,
                 service_receiver,
+                connections,
             },
             service_sender,
             proxy_receiver,
