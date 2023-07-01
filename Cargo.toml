@@ -40,7 +40,6 @@ path = "quanta-crypto"
 [workspace.dependencies.quanta-swap]
 path = "quanta-swap"
 
-
 [workspace.dependencies.base64ct]
 version = "1.6.0"
 features = ["alloc"]
