@@ -1,35 +1,29 @@
 #[derive(Debug, thiserror::Error)]
 pub enum ProtobuffableError {
     #[error("Multihash from proto error")]
-    /// This error can result from trying to
-    /// convert bytes that were received from
-    /// the network to multihash based bytes
+    /// This error can result from trying to convert bytes that were received from the network
+    /// to multihash based bytes
     Multihash(#[from] libp2p::multihash::Error),
     #[error("QueryID from proto error")]
-    /// An error can get when we try to
-    /// convert the bytes received as
-    /// a result of to_proto to QueryID
+    /// An error can get when we try to convert the bytes received as a result
+    /// of to_proto to QueryID
     QueryId(#[from] crate::searchid::QueryIDError),
     #[error("Protobuf decode error")]
-    /// Error whill occur when
-    /// trying to decode protobuf bytes
+    /// Error whill occur when trying to decode protobuf bytes
     ProtobufDecode(#[from] prost::DecodeError),
     #[error("Invalid protobuf message type")]
     InvalidProtoMessageType,
 }
-/// if protobuffable is implemented for an object,
-/// then it can most likely be transmitted over the network
+/// if protobuffable is implemented for an object, then it can most likely be
+/// transmitted over the network
 pub trait Protobuffable
 where
     Self: Sized,
 {
-    /// The value that we get from the network
-    /// can be not only Vec<u8>,
-    /// for example Vec<Peerid> turns into Vec<Vec<u8>>
+    /// The value that we get from the network can be not only Vec<u8>, for example Vec<Peerid>
+    /// turns into Vec<Vec<u8>>
     type ProtoValue;
-    /// Convert the bytes that
-    /// were received from protobuf to the
-    /// value that we have locally in rust
+    /// Convert the bytes that were received from protobuf to the value that we have locally in rust
     fn from_proto(input: Self::ProtoValue) -> Result<Self, ProtobuffableError>;
     /// Convert local object rust to protobuf based bytes
     fn to_proto(&self) -> Self::ProtoValue;

@@ -6,16 +6,14 @@ use {
 #[derive(thiserror::Error, Debug)]
 pub enum ZipLibError {
     #[error("Into Result")]
-    /// Eror whill occur when convert finish state
-    /// into result when trying to encode into gzip-bytes
+    /// Eror whill occur when convert finish state into result when trying to encode into
+    /// gzip-bytes
     IntoResult,
     #[error("Gzip decoder creation error")]
-    /// Error whill occur when trying
-    /// to create new gzip decoder
+    /// Error whill occur when trying to create new gzip decoder
     CreateGzipDecoder,
     #[error("Gzip encoder creation error")]
-    /// Error whill occur when trying
-    /// to create new gzip encoder
+    /// Error whill occur when trying to create new gzip encoder
     CreateGzipEncoder,
     #[error("IO error")]
     /// Eror whill occur when decoding/encoding bytes

@@ -8,17 +8,14 @@ use {
 #[derive(Debug, thiserror::Error)]
 pub enum HashValueError {
     #[error("From Hex-String Error: {0}")]
-    /// Error whill occur when trying to
-    /// get [`HashValue`]  from hex based string
+    /// Error whill occur when trying to get [`HashValue`]  from hex based string
     StringHex(#[from] hex::FromHexError),
     #[error("From SLice Error: {0}")]
-    /// Error whill occur when trying to
-    /// get [`HashValue`] from bytes of hash
+    /// Error whill occur when trying to get [`HashValue`] from bytes of hash
     Bytes(#[from] std::array::TryFromSliceError),
 }
 
-/// [`HashValue`] its just a hash
-/// but with some implementations
+/// [`HashValue`] its just a hash but with some implementations
 #[derive(Debug, Clone, Copy, PartialOrd, Ord, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct HashValue(Hash);
 
@@ -50,8 +47,7 @@ impl TryFrom<&str> for HashValue {
     type Error = HashValueError;
     fn try_from(value: &str) -> Result<Self, Self::Error> { Ok(Self(Hash::from_hex(value)?)) }
 }
-/// Get [`HashValue`]
-/// from raw hash bytes
+/// Get [`HashValue`] from raw hash bytes
 impl TryFrom<&[u8]> for HashValue {
     type Error = HashValueError;
     fn try_from(value: &[u8]) -> Result<Self, Self::Error> { Ok(Self(Hash::try_from(value)?)) }

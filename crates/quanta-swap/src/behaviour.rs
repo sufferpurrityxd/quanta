@@ -34,9 +34,7 @@ use {
     },
 };
 
-/// Base storage of QuantaSwap protocol.
-///
-/// Any database can be used as storage (even in memory),
+/// Base storage of QuantaSwap protocol. Any database can be used as storage (even in memory),
 /// but I recommend using something like Rocksdb
 pub trait Storage {
     /// Check if value with key exists
@@ -45,9 +43,7 @@ pub trait Storage {
     fn get(&self, key: Vec<u8>) -> Option<Vec<u8>>;
 }
 
-/// Events that we are send out of this behaviour
-///
-/// Here we got only 1 event - QueryCompleted
+/// Events that we are send out of this behaviour Here we got only 1 event - QueryCompleted
 #[derive(Debug)]
 pub enum Event {
     QueryCompleted {
@@ -81,13 +77,9 @@ pub struct Behaviour<S>
 where
     S: Storage + 'static,
 {
-    /// Communication between peers is
-    /// implemented using the request_repsonse
-    /// protocol
+    /// Communication between peers is implemented using the request_repsonse protocol
     request_response: RequestResponse,
-    /// Storage is needed to check or receive
-    /// data that will be sent
-    /// later to other network members
+    /// Storage is needed to check or receive data that will be sent later to other network members
     storage: Arc<S>,
     /// All active connections
     connections: FnvHashSet<PeerId>,
@@ -123,10 +115,8 @@ where
             out_evenets_queue,
         }
     }
-    /// Call this function if you need create new search query.
-    ///
-    /// Search query create new random [`SearchID`] and
-    /// sends [`QuantaSwapRequest::Query`] to all connections
+    /// Call this function if you need create new search query. Search query create new
+    /// random [`SearchID`] and sends [`QuantaSwapRequest::Query`] to all connections
     pub fn search_item_with(&mut self, searching: Vec<u8>) -> SearchID {
         let search_id = SearchID::random();
         debug!(

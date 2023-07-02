@@ -11,10 +11,8 @@ pub enum QueryIDError {
     HashValue(#[from] quanta_crypto::HashValueError),
 }
 
-/// SearchID is always (hopefully) the unique
-/// identifier for query queries on the network.
-/// it allows you to understand what request a
-/// particular peer is currently transmitting
+/// SearchID is always (hopefully) the unique identifier for query queries on the network.
+/// it allows you to understand what request a particular peer is currently transmitting
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Hash)]
 pub struct SearchID(HashValue);
 

@@ -24,8 +24,7 @@ impl<'a, R: AsyncRead + Unpin> ArtifactStreamReader<'a, R> {
     }
 }
 
-/// Implementing a stream for the reader to
-/// stream artifacts from a file
+/// Implementing a stream for the reader to stream artifacts from a file
 impl<'a, R: AsyncRead + Unpin> Stream for ArtifactStreamReader<'a, R> {
     type Item = Result<Artifact>;
 
@@ -38,11 +37,9 @@ impl<'a, R: AsyncRead + Unpin> Stream for ArtifactStreamReader<'a, R> {
         };
 
         match size == 0 {
-            // if the size of the loaded buf == 0,
-            // then we have completely read the file
+            // if the size of the loaded buf == 0, then we have completely read the file
             true => Poll::Ready(None),
-            // If the size is not equal to zero,
-            // then we create a new artifact
+            // If the size is not equal to zero, then we create a new artifact
             false => Poll::Ready(Some(Ok(Artifact::new(buf[..size].to_vec())))),
         }
     }

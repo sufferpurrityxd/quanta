@@ -18,8 +18,7 @@ pub enum QuantaSwapRespone {
     Query {
         /// Unique id
         search_id: SearchID,
-        /// Check [`crate::Storage::exists`]
-        /// and send it
+        /// Check [`crate::Storage::exists`] and send it
         exists: bool,
     },
     /// Response

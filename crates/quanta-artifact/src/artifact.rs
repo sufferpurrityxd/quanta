@@ -1,11 +1,7 @@
 use crate::id::ArtifactId;
 
-/// Main object in Quanta Protocol
-///
-/// Artifact contains just
-/// two fields - data-bytes
-/// and unique sha2-256 hash of
-/// this bytes that called are [`ArtifactId`]
+/// Main object in Quanta Protocol Artifact contains just two fields - data-bytes and
+/// unique sha2-256 hash of this bytes that called are [`ArtifactId`]
 #[derive(Debug, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Artifact {
     /// Unqiue id of [`Artifact::data`]

@@ -15,17 +15,13 @@ use {
 #[derive(thiserror::Error, Debug)]
 pub enum MagnetError {
     #[error("To Json Error")]
-    /// This error whill occur
-    /// when trying to convert [`MagnetLink`]
-    /// into json bytes
+    /// This error whill occur when trying to convert [`MagnetLink`] into json bytes
     ToJson,
     #[error("From json error")]
-    /// Error whill occur when trying
-    /// to convert json-bytes into [`MagnetLink`]
+    /// Error whill occur when trying to convert json-bytes into [`MagnetLink`]
     FromJson,
     #[error("Base58 Decode Error: {0}")]
-    /// Error whill occur when trying to
-    /// convert string magnet link into bytes
+    /// Error whill occur when trying to convert string magnet link into bytes
     Base58Decode(#[from] bs58::decode::Error),
     #[error("Zip lib error")]
     /// Error whill occur when working with compression
@@ -35,16 +31,13 @@ pub enum MagnetError {
     IOError(#[from] std::io::Error),
 }
 
-/// A magnet link is a link to a file on the quanta network.
-/// It stores information about the id of the artifacts that
-/// need to be obtained in order to collect the file. File size,
-/// file name, extension. All this is encoded in json, and then
-/// in base58 string
+/// A magnet link is a link to a file on the quanta network. It stores information about the id of
+/// the artifacts that need to be obtained in order to collect the file. File size, file name,
+/// extension. All this is encoded in json, and then in base58 string
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MagnetLink {
-    /// Artifact id mapping stores the order number of
-    /// the id of the artifact. That is, the index determines
-    /// in what order to collect the final file
+    /// Artifact id mapping stores the order number of the id of the artifact. That is, the index
+    /// determines in what order to collect the final file
     artifact_id_mapping: HashMap<usize, ArtifactId>,
     /// Name of file
     file_name: String,
@@ -122,8 +115,7 @@ impl MagnetLink {
 }
 
 impl Display for MagnetLink {
-    /// Get string-based type of magnet
-    /// link for sharing over network
+    /// Get string-based type of magnet link for sharing over network
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let json = self
             .to_json_compressed()
@@ -134,8 +126,7 @@ impl Display for MagnetLink {
 
 impl TryFrom<String> for MagnetLink {
     type Error = MagnetError;
-    /// Get [`MagnetLink`] from string-based
-    /// link that we are receive in [`Display`]
+    /// Get [`MagnetLink`] from string-based link that we are receive in [`Display`]
     fn try_from(value: String) -> Result<Self, Self::Error> {
         Self::from_json_compressed(bs58::decode(value).into_vec()?)
     }

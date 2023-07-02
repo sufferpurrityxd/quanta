@@ -22,8 +22,7 @@ impl AdvancedHasher {
 
         Self(hasher.finalize().into())
     }
-    /// For some reason blake3 not support
-    /// [`Digest`] so we just use this func if we want blake
+    /// For some reason blake3 not support [`Digest`] so we just use this func if we want blake
     pub fn new_with_blake3(input: &[u8]) -> Self {
         let mut hasher = Self::get_blake_hasher();
         hasher.update(input);
@@ -39,8 +38,7 @@ impl AdvancedHasher {
         self.0 = hasher.finalize().into();
         self
     }
-    /// For some reason blake3 not support
-    /// [`Digest`] so we just use this func if we want blake
+    /// For some reason blake3 not support [`Digest`] so we just use this func if we want blake
     pub fn update_with_blake3(&mut self) -> &mut AdvancedHasher {
         let mut hasher = Self::get_blake_hasher();
         hasher.update(self.0.as_slice());
