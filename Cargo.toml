@@ -1,10 +1,10 @@
 [workspace]
 members = [
-    "quanta-artifact",
-    "quanta-crypto",
-    "quanta-network",
-    "quanta-store",
-    "quanta-swap",
+    "crates/quanta-artifact",
+    "crates/quanta-crypto",
+    "crates/quanta-network",
+    "crates/quanta-store",
+    "crates/quanta-swap",
 ]
 
 [workspace.dependencies]
@@ -43,11 +43,11 @@ log = "0.4.19"
 pretty_env_logger = "0.5.0"
 prost = "0.11.9"
 prost-build = "0.11.9"
-quanta-artifact = { path = "quanta-artifact" }
-quanta-crypto = { path = "quanta-crypto" }
-quanta-swap = { path = "quanta-swap" }
-quanta-store = { path = "quanta-store" }
-quanta-network = { path = "quanta-network" }
+quanta-artifact = { path = "crates/quanta-artifact" }
+quanta-crypto = { path = "crates/quanta-crypto" }
+quanta-swap = { path = "crates/quanta-swap" }
+quanta-store = { path = "crates/quanta-store" }
+quanta-network = { path = "crates/quanta-network" }
 rand = "0.8.5"
 serde = { version = "1.0.164", features = ["derive"] }
 serde_json = "1.0.97"
