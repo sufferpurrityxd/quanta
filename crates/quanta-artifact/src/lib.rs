@@ -17,4 +17,5 @@ pub(crate) const MAX_ARTIFACT_SIZE: usize = 2048;
 pub use crate::{
     artifact::Artifact,
     id::{ArtifactId, ArtifactIdError},
+    magnet::{MagnetError, MagnetLink},
 };
