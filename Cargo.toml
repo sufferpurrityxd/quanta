@@ -2,8 +2,6 @@
 members = [
     "crates/quanta-artifact",
     "crates/quanta-crypto",
-    "crates/quanta-network",
-    "crates/quanta-store",
     "crates/quanta-swap",
 ]
 
@@ -46,13 +44,10 @@ prost-build = "0.11.9"
 quanta-artifact = { path = "crates/quanta-artifact" }
 quanta-crypto = { path = "crates/quanta-crypto" }
 quanta-swap = { path = "crates/quanta-swap" }
-quanta-store = { path = "crates/quanta-store" }
-quanta-network = { path = "crates/quanta-network" }
 rand = "0.8.5"
 serde = { version = "1.0.164", features = ["derive"] }
 serde_json = "1.0.97"
 sha2 = "0.10.7"
 sha3 = "0.10.8"
-sled = "0.34.7"
 thiserror = "1.0.40"
 tokio = { version = "1.28.2", features = ["full"] }
