@@ -2412,6 +2412,7 @@ name = "quanta-network"
 version = "0.1.0"
 dependencies = [
  "libp2p",
+ "log",
  "quanta-artifact",
  "quanta-store",
  "quanta-swap",

@@ -4,7 +4,7 @@ use {
 };
 
 /// Information about connection with [libp2p::PeerId]
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ConnectionInformation {
     /// The addresses that the peer is listening on.
     listen_addrs: Vec<Multiaddr>,

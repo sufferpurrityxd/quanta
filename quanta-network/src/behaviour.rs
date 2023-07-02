@@ -8,13 +8,13 @@ use {
 #[derive(NetworkBehaviour)]
 pub struct QuantaNetworkBehaviour {
     /// [quanta_swap::Behaviour] used for finding Artifacts in network
-    quanta_swap: quanta_swap::Behaviour<quanta_store::QuantaStore>,
+    pub(crate) quanta_swap: quanta_swap::Behaviour<quanta_store::QuantaStore>,
     /// [kad::Kademlia] used for discovery peers in network
-    kademlia: kad::Kademlia<kad::store::MemoryStore>,
+    pub(crate) kademlia: kad::Kademlia<kad::store::MemoryStore>,
     /// [ping::Behaviour] used for update inforumation about rtt with connecitons
-    ping: ping::Behaviour,
+    pub(crate) ping: ping::Behaviour,
     /// [identify::Behaviour] used for update information about connections
-    identify: identify::Behaviour,
+    pub(crate) identify: identify::Behaviour,
 }
 
 impl QuantaNetworkBehaviour {

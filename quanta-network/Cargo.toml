@@ -10,3 +10,4 @@ quanta-store = { workspace = true }
 tokio = { workspace = true }
 quanta-artifact = { workspace = true }
 thiserror = { workspace = true }
+log = { workspace = true }

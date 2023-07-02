@@ -1,7 +1,10 @@
-use libp2p::PeerId;
-use quanta_artifact::{Artifact, ArtifactId};
-use quanta_swap::SearchID;
-use crate::info::ConnectionInformation;
+use {
+    crate::info::ConnectionInformation,
+    libp2p::PeerId,
+    quanta_artifact::{Artifact, ArtifactId},
+    quanta_swap::SearchID,
+    std::collections::HashMap,
+};
 
 /// Events that [crate::service::QuantaService] receive from proxy
 #[derive(Debug)]
@@ -9,7 +12,7 @@ pub enum ToServiceEvent {
     /// Proxy sends this event when he wants all connections with node
     ///
     /// Here we got [tokio::sync::oneshot::Sender] that we want send to
-    GetConnections(tokio::sync::oneshot::Sender<(PeerId, ConnectionInformation)>),
+    GetConnections(tokio::sync::oneshot::Sender<HashMap<PeerId, ConnectionInformation>>),
     /// Proxy sends this event when he wants create new search that implemented by
     /// [quanta_swap::Behaviour]
     CreateQuantaSearch {
@@ -17,8 +20,8 @@ pub enum ToServiceEvent {
         searching: ArtifactId,
         /// [tokio::sync::oneshot::Sender] that send [SearchID] which received from
         /// [quanta_swap::Behaviour::search_item_with]
-        search_id_ch: tokio::sync::oneshot::Sender<SearchID>,
-    }
+        ch: tokio::sync::oneshot::Sender<SearchID>,
+    },
 }
 
 /// Events that proxy receive from [crate::service::QuantaService]
@@ -31,5 +34,5 @@ pub enum ToProxyEvent {
         search_id: SearchID,
         /// Value that proxy searchs
         artifact: Artifact,
-    }
+    },
 }
