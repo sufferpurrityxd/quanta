@@ -4,6 +4,7 @@ members = [
     "crates/quanta-artifact",
     "crates/quanta-crypto",
     "crates/quanta-swap",
+    "crates/quanta-http",
 ]
 
 [workspace.dependencies]
@@ -46,6 +47,8 @@ prost-build = "0.11.9"
 quanta-artifact = { path = "crates/quanta-artifact" }
 quanta-crypto = { path = "crates/quanta-crypto" }
 quanta-swap = { path = "crates/quanta-swap" }
+quanta-database = { path = "crates/quanta-database" }
+quanta-http = { path = "crates/quanta-http" }
 rand = "0.8.5"
 serde = { version = "1.0.164", features = ["derive"] }
 serde_json = "1.0.97"
@@ -54,3 +57,4 @@ sha3 = "0.10.8"
 thiserror = "1.0.40"
 tokio = { version = "1.28.2", features = ["full"] }
 byteorder = "1.4.3"
+actix-web = "4.3.1"

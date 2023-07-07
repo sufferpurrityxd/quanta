@@ -48,8 +48,7 @@ impl Database {
     where
         P: AsRef<Path>,
     {
-        let artifact_db =
-            sled::open(&path).map_err(DatabaseError::ArtifactStorageOpen)?;
+        let artifact_db = sled::open(&path).map_err(DatabaseError::ArtifactStorageOpen)?;
         let magnet_tree = artifact_db
             .open_tree(MAGNET_TREE_NAME)
             .map_err(DatabaseError::MagnetTreeStorageOpen)?;

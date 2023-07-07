@@ -92,6 +92,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         search_id,
                         searching,
                         item,
+                        ..
                     })) => {
                         let result_str = from_utf8(item.as_slice()).unwrap();
                         let searching_str = from_utf8(searching.as_slice()).unwrap();
