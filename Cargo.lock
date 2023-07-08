@@ -2856,6 +2856,7 @@ dependencies = [
 name = "quanta-network"
 version = "0.1.0"
 dependencies = [
+ "either",
  "futures",
  "libp2p",
  "log",
@@ -2864,6 +2865,7 @@ dependencies = [
  "serde",
  "thiserror",
  "tokio",
+ "void",
 ]
 
 [[package]]

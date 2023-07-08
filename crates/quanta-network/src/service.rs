@@ -1,5 +1,6 @@
 use std::{collections::HashMap, sync::Arc};
 
+use either::Either;
 use libp2p::{
     futures::StreamExt,
     identify,
@@ -8,7 +9,9 @@ use libp2p::{
     mdns,
     noise,
     ping,
+    ping::Failure,
     swarm,
+    swarm::ConnectionHandlerUpgrErr,
     tcp,
     yamux,
     PeerId,
@@ -19,6 +22,7 @@ use log::{debug, error, info};
 use quanta_artifact::{Artifact, ArtifactId};
 use quanta_swap::Storage;
 use tokio::sync;
+use void::Void;
 
 use crate::{
     behaviour::{QuantaBehaviour, QuantaBehaviourEvent},
@@ -57,6 +61,20 @@ where
     /// Proxy receiver. Receive [IntoNetworkEvent] from proxy
     network_rx: sync::mpsc::Receiver<IntoNetworkEvent>,
 }
+/// Create custom type for more code readability
+type CustomSwarmEvent<S> = swarm::SwarmEvent<
+    QuantaBehaviourEvent<S>,
+    Either<
+        Either<
+            Either<
+                Either<std::io::Error, ConnectionHandlerUpgrErr<std::io::Error>>,
+                std::io::Error,
+            >,
+            Failure,
+        >,
+        Void,
+    >,
+>;
 
 impl<S> QuantaNetwork<S>
 where
@@ -173,13 +191,30 @@ where
             .await?)
     }
     /// Handle events that we are accept from [Swarm]. Events based on [QuantaBehaviour]
-    async fn handle_swarm(&mut self, event: QuantaBehaviourEvent<S>) -> Result<(), Error> {
+    async fn handle_swarm(&mut self, event: CustomSwarmEvent<S>) -> Result<(), Error> {
         match event {
-            QuantaBehaviourEvent::QuantaSwap(event) => self.handle_quanta_swap(event).await,
-            QuantaBehaviourEvent::Kademlia(event) => self.handle_kademlia(event).await,
-            QuantaBehaviourEvent::Identify(event) => self.handle_identify(event).await,
-            QuantaBehaviourEvent::Ping(event) => self.handle_ping(event).await,
-            QuantaBehaviourEvent::Mdns(event) => self.handle_mdns(event).await,
+            swarm::SwarmEvent::ConnectionEstablished { peer_id, .. } => {
+                self.connections
+                    .entry(peer_id)
+                    .or_insert(ConnectionInfo::default());
+                Ok(())
+            },
+            swarm::SwarmEvent::ConnectionClosed { peer_id, .. } => {
+                self.connections.remove(&peer_id);
+                Ok(())
+            },
+            swarm::SwarmEvent::NewListenAddr { address, .. } => {
+                info!("Swarm Listen On Address={}", address);
+                Ok(())
+            },
+            swarm::SwarmEvent::Behaviour(event) => match event {
+                QuantaBehaviourEvent::QuantaSwap(event) => self.handle_quanta_swap(event).await,
+                QuantaBehaviourEvent::Kademlia(event) => self.handle_kademlia(event).await,
+                QuantaBehaviourEvent::Identify(event) => self.handle_identify(event).await,
+                QuantaBehaviourEvent::Ping(event) => self.handle_ping(event).await,
+                QuantaBehaviourEvent::Mdns(event) => self.handle_mdns(event).await,
+            },
+            _ => Ok(()),
         }
     }
     /// Handle events that we are accept from [QuantaNetworkServiceProxy]
@@ -218,14 +253,11 @@ where
         loop {
             tokio::select! {
                 swarm_event = self.swarm.select_next_some() => {
-                    if let Ok(swarm_event) = swarm_event.try_into_behaviour_event() {
-                        println!("{:?}", swarm_event);
-                        if let Err(error) = self.handle_swarm(swarm_event).await {
-                            error!(
-                                "Got unexpected error when handling events from swarm: {}",
-                                error
-                            )
-                        }
+                    if let Err(error) = self.handle_swarm(swarm_event).await {
+                        error!(
+                            "Got unexpected error when handling events from swarm: {}",
+                            error
+                        )
                     }
                 }
                 proxy_event = self.network_rx.recv() => {

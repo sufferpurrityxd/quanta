@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+either = { workspace = true }
 futures = { workspace = true }
 libp2p = { workspace = true }
 log = { workspace = true }
@@ -12,3 +13,4 @@ quanta-swap = { workspace = true }
 serde = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
+void = { workspace = true }
