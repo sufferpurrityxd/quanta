@@ -9,6 +9,6 @@ libp2p = { workspace = true }
 log = { workspace = true }
 quanta-artifact = { workspace = true }
 quanta-swap = { workspace = true }
+serde = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
-serde = { workspace = true }

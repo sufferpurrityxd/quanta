@@ -4,6 +4,7 @@ members = [
     "crates/quanta-crypto",
     "crates/quanta-database",
     "crates/quanta-http",
+    "crates/quanta-main",
     "crates/quanta-network",
     "crates/quanta-swap",
 ]
@@ -21,6 +22,7 @@ digest = "0.10.7"
 fnv = "1.0.7"
 futures = "0.3.28"
 hex = "0.4.3"
+home = "0.5.5"
 libflate = "1.4.0"
 libp2p = { version = "0.51.3", features = ["async-std",
     "autonat",
@@ -50,8 +52,8 @@ quanta-artifact = { path = "crates/quanta-artifact" }
 quanta-crypto = { path = "crates/quanta-crypto" }
 quanta-database = { path = "crates/quanta-database" }
 quanta-http = { path = "crates/quanta-http" }
-quanta-swap = { path = "crates/quanta-swap" }
 quanta-network = { path = "crates/quanta-network" }
+quanta-swap = { path = "crates/quanta-swap" }
 rand = "0.8.5"
 serde = { version = "1.0.164", features = ["derive"] }
 serde_json = "1.0.97"

@@ -1,0 +1,18 @@
+[package]
+name = "quanta-main"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-std = { workspace = true }
+home = { workspace = true }
+libp2p = { workspace = true }
+log = { workspace = true }
+pretty_env_logger = { workspace = true }
+quanta-artifact = { workspace = true }
+quanta-crypto = { workspace = true }
+quanta-database = { workspace = true }
+quanta-http = { workspace = true }
+quanta-network = { workspace = true }
+quanta-swap = { workspace = true }
+tokio = { workspace = true }

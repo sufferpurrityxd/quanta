@@ -1362,6 +1362,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b07f60793ff0a4d9cef0f18e63b5357e06209987153a64648c972c1e5aff336f"
 
 [[package]]
+name = "home"
+version = "0.5.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5444c27eef6923071f7ebcc33e3444508466a76f7a2b93da00ed6e19f30c1ddb"
+dependencies = [
+ "windows-sys",
+]
+
+[[package]]
 name = "hostname"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2823,6 +2832,24 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror",
+]
+
+[[package]]
+name = "quanta-main"
+version = "0.1.0"
+dependencies = [
+ "async-std",
+ "home",
+ "libp2p",
+ "log",
+ "pretty_env_logger",
+ "quanta-artifact",
+ "quanta-crypto",
+ "quanta-database",
+ "quanta-http",
+ "quanta-network",
+ "quanta-swap",
+ "tokio",
 ]
 
 [[package]]
