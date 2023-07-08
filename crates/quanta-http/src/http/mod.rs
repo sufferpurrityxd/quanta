@@ -1,3 +1,3 @@
+pub mod connection;
 mod error;
 pub mod magnet;
-mod connections;

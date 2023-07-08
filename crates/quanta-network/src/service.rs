@@ -22,10 +22,9 @@ use tokio::sync;
 
 use crate::{
     behaviour::{QuantaBehaviour, QuantaBehaviourEvent},
-    info::ConnectionInfo,
+    info::{ConnectionInfo, IdentifyInfoSerde},
     proxy::{FromNetworkEvent, IntoNetworkEvent, QuantaNetworkServiceProxy},
 };
-use crate::info::IdentifyInfoSerde;
 
 const CHANNELS_BUF_SIZE: usize = 2048 * 2;
 #[derive(thiserror::Error, Debug)]
