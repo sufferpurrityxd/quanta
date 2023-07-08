@@ -12,17 +12,17 @@ where
 {
     /// [kad::Kademlia] is a DHT that used for peers discovery for more info see
     /// https://en.wikipedia.org/wiki/Kademlia
-    kademlia: kad::Kademlia<kad::store::MemoryStore>,
+    pub(crate) kademlia: kad::Kademlia<kad::store::MemoryStore>,
     /// [quanta_swap::Behaviour] is a custom protocol that used for searching artifacts in network.
-    quanta_swap: quanta_swap::Behaviour<S>,
+    pub(crate) quanta_swap: quanta_swap::Behaviour<S>,
     /// [identify::Behaviour] is a protocol that used for peers-identification. If we got this
     /// behaviour we know some [identify::Info] about peer that we can use in HTTP-API
-    identify: identify::Behaviour,
+    pub(crate) identify: identify::Behaviour,
     /// [ping::Behaviour] is a protocol that used for check rtt delay to peers.
-    ping: ping::Behaviour,
+    pub(crate) ping: ping::Behaviour,
     /// [mdns::async_io::Behaviour] is a protool that used for local-peers identification.
     /// using this protocol we can discover peers on the local network
-    mdns: mdns::async_io::Behaviour,
+    pub(crate) mdns: mdns::async_io::Behaviour,
 }
 
 impl<S> QuantaBehaviour<S>
