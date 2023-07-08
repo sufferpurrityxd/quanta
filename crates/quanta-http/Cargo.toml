@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+quanta-artifact = { workspace = true }
 quanta-database = { workspace = true }
 thiserror = { workspace = true }
 actix-web = { workspace = true }

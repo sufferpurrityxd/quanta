@@ -1,6 +1,6 @@
 use {
-    crate::state::HttpServerState,
-    actix_web::{web, App, HttpServer},
+    crate::{routes::api_routes, state::HttpServerState},
+    actix_web::{middleware::Logger, web, App, HttpServer},
     quanta_database::Database,
     std::{net, sync::Arc},
 };
@@ -19,7 +19,10 @@ pub async fn run_http_server<A: net::ToSocketAddrs>(
     database: Arc<Database>,
 ) -> Result<(), RunError> {
     HttpServer::new(move || {
-        App::new().app_data(web::Data::new(HttpServerState::new(Arc::clone(&database))))
+        App::new()
+            .wrap(Logger::default())
+            .app_data(web::Data::new(HttpServerState::new(Arc::clone(&database))))
+            .configure(api_routes)
     })
     .bind(addrs)
     .map_err(RunError::Bind)?
