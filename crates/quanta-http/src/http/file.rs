@@ -11,7 +11,6 @@ use crate::{
     },
     state::HttpServerState,
 };
-
 /// Name of field in [Multipart]
 const FILE_MULTIPART_FORM_FIELD_NAME: &str = "file";
 /// Upload InputFile into Network.
@@ -48,10 +47,8 @@ pub async fn network_file_upload_handler(
                     .database()
                     .insert_artifact(artifact)?;
             }
-
             // when read is compeleted whe should save magnet link in storage
             let magnet_string = magnet_link.to_string();
-            println!("{:?}", magnet_string);
             let index = state
                 .database()
                 .insert_magnet_link(magnet_link)?;
@@ -63,5 +60,5 @@ pub async fn network_file_upload_handler(
         }
     }
 
-    todo!()
+    generate_error_response("Field 'file' does not provided in payload")
 }
