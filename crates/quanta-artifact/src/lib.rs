@@ -18,4 +18,5 @@ pub use crate::{
     artifact::Artifact,
     id::{ArtifactId, ArtifactIdError},
     magnet::{MagnetError, MagnetLink},
+    reader::ArtifactStreamReader,
 };

@@ -37,8 +37,6 @@ pub struct Database {
     artifact_db: sled::Db,
     /// Magnet tree - is a storage that store magnetlinks.
     magnet_tree: sled::Tree,
-    /// Last index that be inserted into storage.
-    magnet_tree_last_index: u64,
 }
 
 impl Database {
@@ -52,14 +50,9 @@ impl Database {
             .open_tree(MAGNET_TREE_NAME)
             .map_err(DatabaseError::MagnetTreeStorageOpen)?;
 
-        let magnet_tree_last_index = match magnet_tree.last()? {
-            Some((index, _)) => u64_from_bytes(index.to_vec()),
-            None => 0,
-        };
         Ok(Database {
             artifact_db,
             magnet_tree,
-            magnet_tree_last_index,
         })
     }
     /// Insert [Artifact] into Database... Key in t
@@ -69,13 +62,20 @@ impl Database {
             .map_err(DatabaseError::ArtifactInsert)?;
         Ok(())
     }
+    /// Last index that be inserted into storage.
+    fn magnet_tree_last_index(&self) -> Result<u64, DatabaseError> {
+        match self.magnet_tree.last()? {
+            Some((index, _)) => Ok(u64_from_bytes(index.to_vec())),
+            None => Ok(0),
+        }
+    }
     /// Insert [MagnetLink] into Tree... Key in is just a indexed-integer.
     /// Value its a json-based bytes of magnet link
-    pub fn insert_magnet_link(&mut self, magnet_link: MagnetLink) -> Result<(), DatabaseError> {
-        self.increment_manget_tree_index();
+    pub fn insert_magnet_link(&self, magnet_link: MagnetLink) -> Result<(), DatabaseError> {
+        let magnet_tree_last_index = self.magnet_tree_last_index()?;
         self.magnet_tree
             .insert(
-                u64_to_bytes(self.magnet_tree_last_index),
+                u64_to_bytes(magnet_tree_last_index),
                 magnet_link
                     .to_json()
                     .map_err(DatabaseError::MagnetToJson)?,
@@ -103,8 +103,6 @@ impl Database {
             .flatten()
             .collect())
     }
-    /// Incerement magnet link index when inserting new one
-    fn increment_manget_tree_index(&mut self) { self.magnet_tree_last_index += 1 }
 }
 /// Implement [quanta_swap::Storage] for [quanta_swap::Behaviour] because all artifacts we are
 /// store in [Database]

@@ -1,4 +1,6 @@
-use actix_web::{body::BoxBody, HttpResponse, ResponseError};
+use std::num::ParseIntError;
+
+use actix_web::{body::BoxBody, http::header::ToStrError, HttpResponse, ResponseError};
 use quanta_database::DatabaseError;
 use quanta_network::ProxyError;
 
@@ -17,6 +19,18 @@ impl From<DatabaseError> for Error {
 
 impl From<ProxyError> for Error {
     fn from(_: ProxyError) -> Self { Error::InternalServerError }
+}
+
+impl From<ParseIntError> for Error {
+    fn from(_: ParseIntError) -> Self { Error::InternalServerError }
+}
+
+impl From<ToStrError> for Error {
+    fn from(_: ToStrError) -> Self { Error::InternalServerError }
+}
+
+impl From<std::io::Error> for Error {
+    fn from(_: std::io::Error) -> Self { Error::InternalServerError }
 }
 
 impl ResponseError for Error {

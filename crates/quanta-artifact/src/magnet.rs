@@ -41,21 +41,18 @@ pub struct MagnetLink {
     artifact_id_mapping: HashMap<usize, ArtifactId>,
     /// Name of file
     file_name: String,
-    /// File extension
-    extension: String,
     /// File size
     size: usize,
 }
 
 impl MagnetLink {
     /// Creates new [`MagnetLink`]
-    pub fn new(file_name: String, extension: String, size: usize) -> Self {
+    pub fn new(file_name: String, size: usize) -> Self {
         let artifact_id_mapping = HashMap::default();
 
         Self {
             artifact_id_mapping,
             file_name,
-            extension,
             size,
         }
     }
