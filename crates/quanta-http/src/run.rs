@@ -2,6 +2,7 @@ use std::{net, sync::Arc};
 
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use quanta_database::Database;
+use quanta_network::QuantaNetworkServiceProxy;
 
 use crate::{routes::api_routes, state::HttpServerState};
 
@@ -17,11 +18,15 @@ pub enum RunError {
 pub async fn run_http_server<A: net::ToSocketAddrs>(
     addrs: A,
     database: Arc<Database>,
+    network_proxy: Arc<QuantaNetworkServiceProxy>,
 ) -> Result<(), RunError> {
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
-            .app_data(web::Data::new(HttpServerState::new(Arc::clone(&database))))
+            .app_data(web::Data::new(HttpServerState::new(
+                Arc::clone(&database),
+                Arc::clone(&network_proxy),
+            )))
             .configure(api_routes)
     })
     .bind(addrs)

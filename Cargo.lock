@@ -2819,6 +2819,7 @@ dependencies = [
  "actix-web",
  "quanta-artifact",
  "quanta-database",
+ "quanta-network",
  "serde",
  "serde_json",
  "thiserror",
@@ -2833,6 +2834,7 @@ dependencies = [
  "log",
  "quanta-artifact",
  "quanta-swap",
+ "serde",
  "thiserror",
  "tokio",
 ]

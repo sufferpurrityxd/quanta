@@ -25,6 +25,7 @@ use crate::{
     info::ConnectionInfo,
     proxy::{FromNetworkEvent, IntoNetworkEvent, QuantaNetworkServiceProxy},
 };
+use crate::info::IdentifyInfoSerde;
 
 const CHANNELS_BUF_SIZE: usize = 2048 * 2;
 #[derive(thiserror::Error, Debug)]
@@ -119,7 +120,7 @@ where
             self.connections
                 .entry(peer_id)
                 .or_insert(ConnectionInfo::default())
-                .identify_info = Some(info)
+                .identify_info = Some(IdentifyInfoSerde::from(info))
         };
         Ok(())
     }

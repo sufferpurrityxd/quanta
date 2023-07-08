@@ -51,6 +51,7 @@ quanta-crypto = { path = "crates/quanta-crypto" }
 quanta-database = { path = "crates/quanta-database" }
 quanta-http = { path = "crates/quanta-http" }
 quanta-swap = { path = "crates/quanta-swap" }
+quanta-network = { path = "crates/quanta-network" }
 rand = "0.8.5"
 serde = { version = "1.0.164", features = ["derive"] }
 serde_json = "1.0.97"

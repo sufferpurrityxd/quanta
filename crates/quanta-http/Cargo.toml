@@ -7,6 +7,7 @@ edition = "2021"
 actix-web = { workspace = true }
 quanta-artifact = { workspace = true }
 quanta-database = { workspace = true }
+quanta-network = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

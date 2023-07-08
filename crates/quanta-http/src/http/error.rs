@@ -1,5 +1,6 @@
 use actix_web::{body::BoxBody, HttpResponse, ResponseError};
 use quanta_database::DatabaseError;
+use quanta_network::ProxyError;
 
 /// Custom HTTP Response that used in api-handlers
 pub type QuantaHttpResponse = Result<HttpResponse, Error>;
@@ -12,6 +13,10 @@ pub enum Error {
 
 impl From<DatabaseError> for Error {
     fn from(_: DatabaseError) -> Self { Error::InternalServerError }
+}
+
+impl From<ProxyError> for Error {
+    fn from(_: ProxyError) -> Self { Error::InternalServerError }
 }
 
 impl ResponseError for Error {
