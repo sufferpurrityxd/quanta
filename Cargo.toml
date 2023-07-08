@@ -10,8 +10,8 @@ members = [
 ]
 
 [workspace.dependencies]
-actix-multipart = "0.6.0"
-actix-web = "4.3"
+actix-multipart = "0.5.0"
+actix-web = "4.2.1"
 async-std = "1.12.0"
 async-trait = "0.1.68"
 base64ct = { version = "1.6.0", features = ["alloc"] }

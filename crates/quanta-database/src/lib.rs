@@ -71,17 +71,17 @@ impl Database {
     }
     /// Insert [MagnetLink] into Tree... Key in is just a indexed-integer.
     /// Value its a json-based bytes of magnet link
-    pub fn insert_magnet_link(&self, magnet_link: MagnetLink) -> Result<(), DatabaseError> {
-        let magnet_tree_last_index = self.magnet_tree_last_index()?;
+    pub fn insert_magnet_link(&self, magnet_link: MagnetLink) -> Result<u64, DatabaseError> {
+        let magnet_tree_last_index = self.magnet_tree_last_index()? + 1;
         self.magnet_tree
             .insert(
                 u64_to_bytes(magnet_tree_last_index),
                 magnet_link
-                    .to_json()
+                    .to_bincode()
                     .map_err(DatabaseError::MagnetToJson)?,
             )
             .map_err(DatabaseError::MagnetInsert)?;
-        Ok(())
+        Ok(magnet_tree_last_index)
     }
     /// Returns all magnet links that stored in [Database] tree
     pub fn get_magnet_links(&self) -> Result<Vec<(u64, MagnetLink)>, DatabaseError> {
@@ -91,7 +91,7 @@ impl Database {
             .map(|result| -> Result<(u64, MagnetLink), DatabaseError> {
                 let (index_ivec, magnet_ivec) = result?;
                 let index = u64_from_bytes(index_ivec.to_vec());
-                match MagnetLink::from_json(magnet_ivec.to_vec()) {
+                match MagnetLink::from_bincode(magnet_ivec.to_vec()) {
                     Ok(magnet) => Ok((index, magnet)),
                     Err(kind) => {
                         error!("got invalid mangnet link bytes in storage: {}", kind);
@@ -140,9 +140,9 @@ impl quanta_swap::Storage for Database {
 
 /// Convert [u64] into bytes this fn used when we are store magnets
 fn u64_to_bytes(val: u64) -> Vec<u8> {
-    let mut buf = Vec::new();
+    let mut buf = [0; 8];
     LittleEndian::write_u64(&mut buf, val);
-    buf
+    buf.to_vec()
 }
 
 /// Convert bytes into u64 this fn used when we are store magnets

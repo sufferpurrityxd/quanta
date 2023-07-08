@@ -14,12 +14,12 @@ use crate::{
 
 #[derive(thiserror::Error, Debug)]
 pub enum MagnetError {
-    #[error("To Json Error")]
-    /// This error whill occur when trying to convert [`MagnetLink`] into json bytes
-    ToJson,
-    #[error("From json error")]
-    /// Error whill occur when trying to convert json-bytes into [`MagnetLink`]
-    FromJson,
+    #[error("To Bincode Error")]
+    /// This error whill occur when trying to convert [`MagnetLink`] into bincode bytes
+    ToBincode,
+    #[error("From bincode error")]
+    /// Error whill occur when trying to convert bincode-bytes into [`MagnetLink`]
+    FromBincode,
     #[error("Base58 Decode Error: {0}")]
     /// Error whill occur when trying to convert string magnet link into bytes
     Base58Decode(#[from] bs58::decode::Error),
@@ -33,7 +33,7 @@ pub enum MagnetError {
 
 /// A magnet link is a link to a file on the quanta network. It stores information about the id of
 /// the artifacts that need to be obtained in order to collect the file. File size, file name,
-/// extension. All this is encoded in json, and then in base58 string
+/// extension. All this is encoded in bincode, and then in base58 string
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MagnetLink {
     /// Artifact id mapping stores the order number of the id of the artifact. That is, the index
@@ -69,32 +69,28 @@ impl MagnetLink {
             None => 1,
         }
     }
-    /// Conver [`MagnetLink`] to str based json
-    pub fn to_json_str(&self) -> Result<String, MagnetError> {
-        serde_json::to_string(self).map_err(|_| MagnetError::ToJson)
+    /// returns bincode-based bytes
+    pub fn to_bincode(&self) -> Result<Vec<u8>, MagnetError> {
+        bincode::serialize(self).map_err(|_| MagnetError::ToBincode)
     }
-    /// returns json-based bytes
-    pub fn to_json(&self) -> Result<Vec<u8>, MagnetError> {
-        serde_json::to_vec(self).map_err(|_| MagnetError::ToJson)
+    /// get bincode bytes and compress them with gzip
+    pub fn to_bincode_compressed(&self) -> Result<Vec<u8>, MagnetError> {
+        Ok(encode_gzip_all(self.to_bincode()?)?)
     }
-    /// get json bytes and compress them with gzip
-    pub fn to_json_compressed(&self) -> Result<Vec<u8>, MagnetError> {
-        Ok(encode_gzip_all(self.to_json()?)?)
+    /// get self from bincode-compressed bytes
+    pub fn from_bincode_compressed(input: Vec<u8>) -> Result<Self, MagnetError> {
+        Self::from_bincode_compressed(decode_gzip_all(input.as_slice())?)
     }
-    /// get self from json-compressed bytes
-    pub fn from_json_compressed(input: Vec<u8>) -> Result<Self, MagnetError> {
-        Self::from_json(decode_gzip_all(input.as_slice())?)
-    }
-    /// returns [`Self`] from json-based bytes
-    pub fn from_json(json: Vec<u8>) -> Result<Self, MagnetError> {
-        serde_json::from_slice(json.as_slice()).map_err(|_| MagnetError::FromJson)
+    /// returns [`Self`] from bincode-based bytes
+    pub fn from_bincode(bincod: Vec<u8>) -> Result<Self, MagnetError> {
+        bincode::deserialize(bincod.as_slice()).map_err(|_| MagnetError::FromBincode)
     }
     /// save magnet link in file
     pub async fn save_into_file<P>(&self, path: P) -> Result<(), MagnetError>
     where
         P: AsRef<Path>,
     {
-        let bytes = self.to_json_compressed()?;
+        let bytes = self.to_bincode_compressed()?;
         let mut file = async_std::fs::File::create(path).await?;
         file.write_all(bytes.as_slice()).await?;
         Ok(())
@@ -107,17 +103,17 @@ impl MagnetLink {
         let mut file = async_std::fs::File::open(path).await?;
         let mut buf = Vec::new();
         file.read_to_end(&mut buf).await?;
-        Self::from_json_compressed(buf)
+        Self::from_bincode_compressed(buf)
     }
 }
 
 impl Display for MagnetLink {
     /// Get string-based type of magnet link for sharing over network
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let json = self
-            .to_json_compressed()
+        let bincoded = self
+            .to_bincode()
             .map_err(|_| std::fmt::Error)?;
-        write!(f, "{}", bs58::encode(json).into_string())
+        write!(f, "{}", bs58::encode(bincoded.as_slice()).into_string())
     }
 }
 
@@ -125,6 +121,6 @@ impl TryFrom<String> for MagnetLink {
     type Error = MagnetError;
     /// Get [`MagnetLink`] from string-based link that we are receive in [`Display`]
     fn try_from(value: String) -> Result<Self, Self::Error> {
-        Self::from_json_compressed(bs58::decode(value).into_vec()?)
+        Self::from_bincode(bs58::decode(value).into_vec()?)
     }
 }
