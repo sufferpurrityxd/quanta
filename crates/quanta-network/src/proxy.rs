@@ -84,7 +84,7 @@ impl QuantaNetworkServiceProxy {
             self.network_tx
                 .send(IntoNetworkEvent::GetConnections { response_channel })
                 .await?;
-            Ok(timeout_oneshot_recv(response_channel_rx).await?)
+            timeout_oneshot_recv(response_channel_rx).await
         })
     }
     /// Create and send new search into [crate::service::QuantaNetwork] and wait [SearchID] that be
@@ -98,7 +98,7 @@ impl QuantaNetworkServiceProxy {
                     response_channel,
                 })
                 .await?;
-            Ok(timeout_oneshot_recv(response_channel_rx).await?)
+            timeout_oneshot_recv(response_channel_rx).await
         })
     }
 }
@@ -107,10 +107,10 @@ async fn timeout_oneshot_recv<R>(
     response_channel_rx: sync::oneshot::Receiver<R>,
 ) -> Result<R, ProxyError> {
     let duration = Duration::from_secs(10);
-    Ok(tokio::time::timeout(duration, response_channel_rx)
+    tokio::time::timeout(duration, response_channel_rx)
         .await
         .map_err(|_| ProxyError::RecvTimeout)?
-        .map_err(|why| ProxyError::Recv(why))?)
+        .map_err(ProxyError::Recv)
 }
 
 impl Stream for QuantaNetworkServiceProxy {

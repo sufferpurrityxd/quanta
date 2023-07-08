@@ -4,5 +4,5 @@ mod info;
 mod proxy;
 mod service;
 
-pub use service::{QuantaNetwork, Error};
-pub use proxy::{ProxyError, QuantaNetworkServiceProxy, FromNetworkEvent};
+pub use proxy::{FromNetworkEvent, ProxyError, QuantaNetworkServiceProxy};
+pub use service::{Error, QuantaNetwork};

@@ -19,6 +19,7 @@ use log::{debug, error, info};
 use quanta_artifact::{Artifact, ArtifactId};
 use quanta_swap::Storage;
 use tokio::sync;
+
 use crate::{
     behaviour::{QuantaBehaviour, QuantaBehaviourEvent},
     info::ConnectionInfo,
@@ -140,7 +141,9 @@ where
                     .behaviour_mut()
                     .kademlia
                     .add_address(&peer, address.clone());
-                self.swarm.dial(address).map_err(Error::Dial)?;
+                self.swarm
+                    .dial(address)
+                    .map_err(Error::Dial)?;
             }
         };
         Ok(())
@@ -183,7 +186,10 @@ where
     async fn handle_proxy(&mut self, event: IntoNetworkEvent) -> Result<(), Error> {
         match event {
             IntoNetworkEvent::GetConnections { response_channel } => {
-                if let Err(_) = response_channel.send(self.connections.clone()) {
+                if response_channel
+                    .send(self.connections.clone())
+                    .is_err()
+                {
                     error!("Got SendError when sending connections from network to proxy")
                 }
                 Ok(())
@@ -192,12 +198,15 @@ where
                 searching,
                 response_channel,
             } => {
-                if let Err(_) = response_channel.send(
-                    self.swarm
-                        .behaviour_mut()
-                        .quanta_swap
-                        .search_item_with(searching.to_bytes()),
-                ) {
+                if response_channel
+                    .send(
+                        self.swarm
+                            .behaviour_mut()
+                            .quanta_swap
+                            .search_item_with(searching.to_bytes()),
+                    )
+                    .is_err()
+                {
                     error!("Got SendError when sending SearchId from network to proxy");
                 }
                 Ok(())

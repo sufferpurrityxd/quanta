@@ -1,4 +1,7 @@
-use std::fmt::{Display, Formatter};
+use std::{
+    fmt::{Display, Formatter},
+    str::FromStr,
+};
 
 use quanta_crypto::{AdvancedHasher, HashValue};
 use rand::{thread_rng, Rng};
@@ -29,10 +32,6 @@ impl SearchID {
             .finalize(),
         )
     }
-    /// Try get [`QueryID`] from input str
-    pub fn from_str(input: &str) -> Result<Self, QueryIDError> {
-        Ok(Self(HashValue::try_from(input)?))
-    }
     /// Convert hash to bytes
     pub fn to_bytes(self) -> Vec<u8> { self.0.to_bytes() }
     /// Get hash from input bytes
@@ -54,4 +53,10 @@ impl Protobuffable for SearchID {
     }
     /// Convert [`QueryID`] into [`Vec<u8>`] for sending it over network
     fn to_proto(&self) -> Self::ProtoValue { self.to_bytes() }
+}
+
+/// Try get [`QueryID`] from input str
+impl FromStr for SearchID {
+    type Err = QueryIDError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> { Ok(Self(HashValue::try_from(s)?)) }
 }

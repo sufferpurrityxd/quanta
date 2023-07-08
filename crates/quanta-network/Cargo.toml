@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-log = { workspace = true }
-quanta-swap = { workspace = true }
+futures = { workspace = true }
 libp2p = { workspace = true }
+log = { workspace = true }
+quanta-artifact = { workspace = true }
+quanta-swap = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
-futures = { workspace = true }
-quanta-artifact = { workspace = true }
