@@ -1,9 +1,9 @@
-use {
-    crate::{routes::api_routes, state::HttpServerState},
-    actix_web::{middleware::Logger, web, App, HttpServer},
-    quanta_database::Database,
-    std::{net, sync::Arc},
-};
+use std::{net, sync::Arc};
+
+use actix_web::{middleware::Logger, web, App, HttpServer};
+use quanta_database::Database;
+
+use crate::{routes::api_routes, state::HttpServerState};
 
 #[derive(thiserror::Error, Debug)]
 pub enum RunError {

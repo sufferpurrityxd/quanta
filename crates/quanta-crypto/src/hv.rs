@@ -1,9 +1,9 @@
-use {
-    crate::Hash,
-    hex::FromHex,
-    serde::{Deserialize, Serialize},
-    std::fmt::{Display, Formatter, LowerHex},
-};
+use std::fmt::{Display, Formatter, LowerHex};
+
+use hex::FromHex;
+use serde::{Deserialize, Serialize};
+
+use crate::Hash;
 
 #[derive(Debug, thiserror::Error)]
 pub enum HashValueError {

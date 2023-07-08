@@ -1,7 +1,6 @@
-use {
-    crate::{hv::HashValue, Hash},
-    digest::{generic_array::GenericArray, Digest, OutputSizeUser},
-};
+use digest::{generic_array::GenericArray, Digest, OutputSizeUser};
+
+use crate::{hv::HashValue, Hash};
 
 /// [`AdvancedHasher`] - this is about nested hashing
 #[derive(Clone, Copy)]

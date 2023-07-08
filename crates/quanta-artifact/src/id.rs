@@ -1,9 +1,8 @@
-use {
-    quanta_crypto::{AdvancedHasher, HashValue},
-    serde::{Deserialize, Serialize},
-    sha2::Digest,
-    std::fmt::{Display, Formatter},
-};
+use std::fmt::{Display, Formatter};
+
+use quanta_crypto::{AdvancedHasher, HashValue};
+use serde::{Deserialize, Serialize};
+use sha2::Digest;
 
 #[derive(thiserror::Error, Debug)]
 pub enum ArtifactIdError {

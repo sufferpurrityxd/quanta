@@ -1,4 +1,6 @@
-use {quanta_database::Database, std::sync::Arc};
+use std::sync::Arc;
+
+use quanta_database::Database;
 
 /// Base [actix_web::web::Data] state of http proxy of quanta peer to peer data transfer protocol
 pub struct HttpServerState {

@@ -1,27 +1,26 @@
-use {
-    async_std::io,
-    futures::prelude::*,
-    libp2p::{
-        core::upgrade,
-        identity,
-        noise,
-        swarm::{NetworkBehaviour, SwarmBuilder, SwarmEvent},
-        tcp,
-        yamux,
-        Multiaddr,
-        PeerId,
-        Swarm,
-        Transport,
-    },
-    quanta_swap::Storage,
-    std::{
-        collections::HashMap,
-        error::Error,
-        str::{from_utf8, FromStr},
-        sync::Arc,
-    },
-    tokio::sync::Mutex,
+use std::{
+    collections::HashMap,
+    error::Error,
+    str::{from_utf8, FromStr},
+    sync::Arc,
 };
+
+use async_std::io;
+use futures::prelude::*;
+use libp2p::{
+    core::upgrade,
+    identity,
+    noise,
+    swarm::{NetworkBehaviour, SwarmBuilder, SwarmEvent},
+    tcp,
+    yamux,
+    Multiaddr,
+    PeerId,
+    Swarm,
+    Transport,
+};
+use quanta_swap::Storage;
+use tokio::sync::Mutex;
 
 /// MemoryStorage
 struct MemoryStorage(Arc<Mutex<HashMap<Vec<u8>, Vec<u8>>>>);

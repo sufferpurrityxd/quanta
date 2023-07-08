@@ -2,6 +2,7 @@
 members = [
     "crates/quanta-database",
     "crates/quanta-artifact",
+    "crates/quanta-network",
     "crates/quanta-crypto",
     "crates/quanta-swap",
     "crates/quanta-http",

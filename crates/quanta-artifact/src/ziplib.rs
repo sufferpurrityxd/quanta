@@ -1,7 +1,6 @@
-use {
-    libflate::gzip::{Decoder, Encoder},
-    std::io::{Read, Write},
-};
+use std::io::{Read, Write};
+
+use libflate::gzip::{Decoder, Encoder};
 
 #[derive(thiserror::Error, Debug)]
 pub enum ZipLibError {

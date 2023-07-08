@@ -1,7 +1,6 @@
-use {
-    crate::{protobuffable::Protobuffable, request::QuantaSwapRequest, searchid::SearchID},
-    libp2p::PeerId,
-};
+use libp2p::PeerId;
+
+use crate::{protobuffable::Protobuffable, request::QuantaSwapRequest, searchid::SearchID};
 
 #[test]
 fn test_query_id() {

@@ -1,12 +1,11 @@
-use {
-    crate::{
-        protobuffable::Protobuffable,
-        protocol::QuantaSwapProtocol,
-        request::QuantaSwapRequest,
-        response::QuantaSwapRespone,
-    },
-    futures::{AsyncRead, AsyncWrite},
-    libp2p::{core::upgrade, request_response::Codec},
+use futures::{AsyncRead, AsyncWrite};
+use libp2p::{core::upgrade, request_response::Codec};
+
+use crate::{
+    protobuffable::Protobuffable,
+    protocol::QuantaSwapProtocol,
+    request::QuantaSwapRequest,
+    response::QuantaSwapRespone,
 };
 
 #[derive(Debug, Clone)]

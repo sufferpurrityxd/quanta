@@ -1,9 +1,8 @@
-use {
-    byteorder::{ByteOrder, LittleEndian},
-    log::error,
-    quanta_artifact::{Artifact, MagnetLink},
-    std::path::Path,
-};
+use std::path::Path;
+
+use byteorder::{ByteOrder, LittleEndian};
+use log::error;
+use quanta_artifact::{Artifact, MagnetLink};
 
 const MAGNET_TREE_NAME: &str = "magnets";
 

@@ -1,7 +1,6 @@
-use {
-    crate::{ah::AdvancedHasher, hv::HashValue},
-    digest::Digest,
-};
+use digest::Digest;
+
+use crate::{ah::AdvancedHasher, hv::HashValue};
 
 fn get_hashvalue() -> HashValue {
     AdvancedHasher::new(b"beep boop", sha3::Sha3_256::new())

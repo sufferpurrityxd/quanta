@@ -1,9 +1,9 @@
-use {
-    crate::protobuffable::{Protobuffable, ProtobuffableError},
-    quanta_crypto::{AdvancedHasher, HashValue},
-    rand::{thread_rng, Rng},
-    std::fmt::{Display, Formatter},
-};
+use std::fmt::{Display, Formatter};
+
+use quanta_crypto::{AdvancedHasher, HashValue};
+use rand::{thread_rng, Rng};
+
+use crate::protobuffable::{Protobuffable, ProtobuffableError};
 
 #[derive(Debug, thiserror::Error)]
 pub enum QueryIDError {

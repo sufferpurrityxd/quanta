@@ -1,11 +1,11 @@
-use {
-    crate::{
-        protobuffable::{Protobuffable, ProtobuffableError},
-        searchid::SearchID,
-        swap_pb,
-    },
-    prost::Message,
-    std::fmt::{Display, Formatter},
+use std::fmt::{Display, Formatter};
+
+use prost::Message;
+
+use crate::{
+    protobuffable::{Protobuffable, ProtobuffableError},
+    searchid::SearchID,
+    swap_pb,
 };
 
 const QUERY_RESPONSE_MESSAGE_TYPE: i32 = 0;

@@ -1,12 +1,12 @@
-use {
-    crate::{artifact::Artifact, MAX_ARTIFACT_SIZE},
-    futures::{AsyncRead, Stream},
-    std::{
-        io::Result,
-        pin::Pin,
-        task::{Context, Poll},
-    },
+use std::{
+    io::Result,
+    pin::Pin,
+    task::{Context, Poll},
 };
+
+use futures::{AsyncRead, Stream};
+
+use crate::{artifact::Artifact, MAX_ARTIFACT_SIZE};
 
 /// Custom Artifact file reader
 pub struct ArtifactStreamReader<'a, R: AsyncRead + Unpin> {

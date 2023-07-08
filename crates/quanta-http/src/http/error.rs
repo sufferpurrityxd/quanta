@@ -1,7 +1,5 @@
-use {
-    actix_web::{body::BoxBody, HttpResponse, ResponseError},
-    quanta_database::DatabaseError,
-};
+use actix_web::{body::BoxBody, HttpResponse, ResponseError};
+use quanta_database::DatabaseError;
 
 /// Custom HTTP Response that used in api-handlers
 pub type QuantaHttpResponse = Result<HttpResponse, Error>;

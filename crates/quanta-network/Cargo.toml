@@ -1,0 +1,8 @@
+[package]
+name = "quanta-network"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+quanta-swap = { workspace = true }
+libp2p = { workspace = true }

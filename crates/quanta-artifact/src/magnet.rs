@@ -1,15 +1,15 @@
-use {
-    crate::{
-        id::ArtifactId,
-        ziplib::{decode_gzip_all, encode_gzip_all},
-    },
-    async_std::path::Path,
-    futures::{AsyncReadExt, AsyncWriteExt},
-    serde::{Deserialize, Serialize},
-    std::{
-        collections::HashMap,
-        fmt::{Display, Formatter},
-    },
+use std::{
+    collections::HashMap,
+    fmt::{Display, Formatter},
+};
+
+use async_std::path::Path;
+use futures::{AsyncReadExt, AsyncWriteExt};
+use serde::{Deserialize, Serialize};
+
+use crate::{
+    id::ArtifactId,
+    ziplib::{decode_gzip_all, encode_gzip_all},
 };
 
 #[derive(thiserror::Error, Debug)]

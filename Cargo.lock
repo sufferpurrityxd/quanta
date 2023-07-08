@@ -2825,6 +2825,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "quanta-network"
+version = "0.1.0"
+dependencies = [
+ "libp2p",
+ "quanta-swap",
+]
+
+[[package]]
 name = "quanta-swap"
 version = "0.1.0"
 dependencies = [

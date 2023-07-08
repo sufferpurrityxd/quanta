@@ -1,37 +1,37 @@
-use {
-    crate::{
-        codec::QuantaSwapCodec,
-        protocol::QuantaSwapProtocol,
-        request::QuantaSwapRequest,
-        response::QuantaSwapRespone,
-        searchid::SearchID,
+use std::{
+    collections::{HashMap, VecDeque},
+    sync::Arc,
+    task::{Context, Poll},
+};
+
+use fnv::FnvHashSet;
+use libp2p::{
+    core::Endpoint,
+    request_response::{self, ProtocolSupport, ResponseChannel},
+    swarm::{
+        behaviour::ConnectionEstablished,
+        ConnectionClosed as RequestResponseConnectionClosed,
+        ConnectionDenied,
+        ConnectionId,
+        FromSwarm,
+        NetworkBehaviour,
+        PollParameters,
+        THandler,
+        THandlerInEvent,
+        THandlerOutEvent,
+        ToSwarm,
     },
-    fnv::FnvHashSet,
-    libp2p::{
-        core::Endpoint,
-        request_response::{self, ProtocolSupport, ResponseChannel},
-        swarm::{
-            behaviour::ConnectionEstablished,
-            ConnectionClosed as RequestResponseConnectionClosed,
-            ConnectionDenied,
-            ConnectionId,
-            FromSwarm,
-            NetworkBehaviour,
-            PollParameters,
-            THandler,
-            THandlerInEvent,
-            THandlerOutEvent,
-            ToSwarm,
-        },
-        Multiaddr,
-        PeerId,
-    },
-    log::debug,
-    std::{
-        collections::{HashMap, VecDeque},
-        sync::Arc,
-        task::{Context, Poll},
-    },
+    Multiaddr,
+    PeerId,
+};
+use log::debug;
+
+use crate::{
+    codec::QuantaSwapCodec,
+    protocol::QuantaSwapProtocol,
+    request::QuantaSwapRequest,
+    response::QuantaSwapRespone,
+    searchid::SearchID,
 };
 
 /// Base storage of QuantaSwap protocol. Any database can be used as storage (even in memory),

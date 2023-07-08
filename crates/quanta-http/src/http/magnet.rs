@@ -1,8 +1,7 @@
-use {
-    crate::{http::error::QuantaHttpResponse, state::HttpServerState},
-    actix_web::{web, HttpResponse},
-    serde::{Deserialize, Serialize},
-};
+use actix_web::{web, HttpResponse};
+use serde::{Deserialize, Serialize};
+
+use crate::{http::error::QuantaHttpResponse, state::HttpServerState};
 
 /// HTTP-API Response-item that used in [get_magnet_links_list] handler
 #[derive(Serialize, Deserialize, Debug, Clone)]
