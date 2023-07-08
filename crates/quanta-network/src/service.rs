@@ -19,7 +19,6 @@ use log::{debug, error, info};
 use quanta_artifact::{Artifact, ArtifactId};
 use quanta_swap::Storage;
 use tokio::sync;
-
 use crate::{
     behaviour::{QuantaBehaviour, QuantaBehaviourEvent},
     info::ConnectionInfo,
@@ -34,6 +33,9 @@ pub enum Error {
     ArtifactId(quanta_artifact::ArtifactIdError),
     #[error("Got error when trying to send event into proxy: {0}")]
     FromNetworkSend(#[from] sync::mpsc::error::SendError<FromNetworkEvent>),
+    #[error("Gto error when trying to deal addr: {0}")]
+    /// Error whill occur when we are trying [Swarm::dial]
+    Dial(swarm::DialError),
 }
 /// QuantaNetwork is the backbone of the networking service on the quanta network. It defines
 /// the swarm that [QuantaBehaviour] uses. Storing information about connected peers. to our node
@@ -137,7 +139,8 @@ where
                 self.swarm
                     .behaviour_mut()
                     .kademlia
-                    .add_address(&peer, address);
+                    .add_address(&peer, address.clone());
+                self.swarm.dial(address).map_err(Error::Dial)?;
             }
         };
         Ok(())
@@ -185,35 +188,48 @@ where
                 }
                 Ok(())
             },
+            IntoNetworkEvent::CreateSearch {
+                searching,
+                response_channel,
+            } => {
+                if let Err(_) = response_channel.send(
+                    self.swarm
+                        .behaviour_mut()
+                        .quanta_swap
+                        .search_item_with(searching.to_bytes()),
+                ) {
+                    error!("Got SendError when sending SearchId from network to proxy");
+                }
+                Ok(())
+            },
         }
     }
     /// Run [QuantaNetwork] that check [Swarm] for new events and handle
-    pub fn run_and_handle(mut self) -> Result<(), Error> {
-        futures::executor::block_on(async move {
-            loop {
-                tokio::select! {
-                    swarm_event = self.swarm.select_next_some() => {
-                        if let Ok(swarm_event) = swarm_event.try_into_behaviour_event() {
-                            if let Err(error) = self.handle_swarm(swarm_event).await {
-                                error!(
-                                    "Got unexpected error when handling events from swarm: {}",
-                                    error
-                                )
-                            }
+    pub async fn run_and_handle(mut self) -> Result<(), Error> {
+        loop {
+            tokio::select! {
+                swarm_event = self.swarm.select_next_some() => {
+                    if let Ok(swarm_event) = swarm_event.try_into_behaviour_event() {
+                        println!("{:?}", swarm_event);
+                        if let Err(error) = self.handle_swarm(swarm_event).await {
+                            error!(
+                                "Got unexpected error when handling events from swarm: {}",
+                                error
+                            )
                         }
                     }
-                    proxy_event = self.network_rx.recv() => {
-                        if let Some(proxy_event) = proxy_event {
-                            if let Err(error) = self.handle_proxy(proxy_event).await {
-                                error!(
-                                    "Got unexpected error when handling events from proxy: {}",
-                                    error
-                                )
-                            }
+                }
+                proxy_event = self.network_rx.recv() => {
+                    if let Some(proxy_event) = proxy_event {
+                        if let Err(error) = self.handle_proxy(proxy_event).await {
+                            error!(
+                                "Got unexpected error when handling events from proxy: {}",
+                                error
+                            )
                         }
                     }
                 }
             }
-        })
+        }
     }
 }

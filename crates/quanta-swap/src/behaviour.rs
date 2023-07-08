@@ -337,10 +337,6 @@ where
             };
 
             let event = self.request_response.poll(_cx, _params);
-            debug!(
-                "[`QuantaBehaviour`]: New event from [`RequestResposne`]: {:?}",
-                event
-            );
             match event {
                 Poll::Ready(event) => {
                     if let ToSwarm::NotifyHandler {

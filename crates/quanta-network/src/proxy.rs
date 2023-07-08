@@ -39,15 +39,6 @@ pub enum FromNetworkEvent {
         artifact: Artifact,
     },
 }
-/// Events that we are send from [`QuantaNetworkServiceProxy`] into [`crate::service::QuantaNetwork`]
-#[derive(Debug)]
-pub enum IntoNetworkEvent {
-    /// Get all connections from network
-    GetConnections {
-        /// Over this channel network sends connections
-        response_channel: sync::oneshot::Sender<HashMap<PeerId, ConnectionInfo>>,
-    },
-}
 /// [`QuantaNetworkServiceProxy`] is a way to communicate with a service that is
 /// running on a different thread [crate::service::QuantaNetwork].
 /// Used in conjunication with various services (http-api e.t.c)
@@ -56,6 +47,22 @@ pub struct QuantaNetworkServiceProxy {
     proxy_rx: sync::mpsc::Receiver<FromNetworkEvent>,
     /// Send events into [crate::service::QuantaNetwork]
     network_tx: sync::mpsc::Sender<IntoNetworkEvent>,
+}
+/// Events that we are send from [`QuantaNetworkServiceProxy`] into [`crate::service::QuantaNetwork`]
+#[derive(Debug)]
+pub enum IntoNetworkEvent {
+    /// Get all connections from network
+    GetConnections {
+        /// Over this channel network sends connections
+        response_channel: sync::oneshot::Sender<HashMap<PeerId, ConnectionInfo>>,
+    },
+    /// Send new search into [quanta_swap::Behaviour] and get unique id of search
+    CreateSearch {
+        /// Artifact id that searched
+        searching: ArtifactId,
+        /// Unique id of search
+        response_channel: sync::oneshot::Sender<SearchID>,
+    },
 }
 
 impl QuantaNetworkServiceProxy {
@@ -76,6 +83,20 @@ impl QuantaNetworkServiceProxy {
             let (response_channel, response_channel_rx) = sync::oneshot::channel();
             self.network_tx
                 .send(IntoNetworkEvent::GetConnections { response_channel })
+                .await?;
+            Ok(timeout_oneshot_recv(response_channel_rx).await?)
+        })
+    }
+    /// Create and send new search into [crate::service::QuantaNetwork] and wait [SearchID] that be
+    /// send as response from [crate::service::QuantaNetwork]
+    pub fn create_search(&self, searching: ArtifactId) -> Result<SearchID, ProxyError> {
+        futures::executor::block_on(async move {
+            let (response_channel, response_channel_rx) = sync::oneshot::channel();
+            self.network_tx
+                .send(IntoNetworkEvent::CreateSearch {
+                    searching,
+                    response_channel,
+                })
                 .await?;
             Ok(timeout_oneshot_recv(response_channel_rx).await?)
         })
